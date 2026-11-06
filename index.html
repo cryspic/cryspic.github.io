@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cristian Figura Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Hanken+Grotesk:wght@400;500;700&display=swap">
+<style>
+/* Layout: dark editorial portfolio. Home = intro, one coloured band per category with a tile per project,
+   then "Chi sono". Each project has its own view (#slug) with a coloured header and a gallery.
+   Content lives in the PROJECTS / CATEGORIES data at the bottom, not in the markup. */
+:root {
+  --bg: #1e1e1e;
+  --bg-2: #28282b;
+  --fg: #ebebeb;
+  --muted: #a6a6ab;
+  --line: #3a3a3e;
+  --light-ink: #f1f1f1;
+  --dark-ink: #1e1e1e;
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --text: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --gl: max(16px, env(safe-area-inset-left, 0px));
+  --gr: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--text); font-size: 1rem; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 40; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+h1, h2, h3, p { margin: 0; }
+.disp { font-family: var(--display); font-variation-settings: "SOFT" 100; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 16px; padding: 10px var(--gr) 10px var(--gl); }
+.bar .mark { font-family: var(--display); font-weight: 900; font-size: 1.1rem; font-variation-settings: "SOFT" 100; white-space: nowrap; }
+.bar .back { margin-left: auto; font-size: .8rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; padding: 8px 14px; border: 1px solid var(--line); border-radius: 99px; transition: background .2s, transform .2s; }
+.bar .back:hover { background: var(--bg-2); transform: translateX(-3px); }
+.bar nav { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; min-width: 0; scrollbar-width: none; }
+.bar nav::-webkit-scrollbar { display: none; }
+.bar nav button { background: none; border: 0; cursor: pointer; white-space: nowrap; font-size: .78rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; padding: 8px 10px; border-radius: 99px; color: var(--muted); }
+.bar nav button:hover { color: var(--fg); background: var(--bg-2); }
+
+.hero { padding: clamp(40px, 8vw, 104px) var(--gr) clamp(32px, 5vw, 64px) var(--gl); }
+.hero h1 { font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(3rem, 12vw, 10.5rem); line-height: .95; letter-spacing: -.02em; text-wrap: balance; }
+.hero .sub { margin: 6px 0 0 6px; font-family: var(--display); font-weight: 300; font-variation-settings: "SOFT" 50; font-size: clamp(1.5rem, 4vw, 3.2rem); }
+.hero .lead { margin-top: clamp(24px, 3.5vw, 44px); max-width: 56ch; font-size: 1.15rem; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(24px, 3.5vw, 40px); }
+.chip { display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 99px; border: 1px solid var(--line); background: none; cursor: pointer; font-size: .9rem; font-weight: 500; transition: background .2s, transform .2s; }
+.chip i { width: 11px; height: 11px; border-radius: 50%; background: var(--c); flex: none; }
+.chip:hover { background: var(--bg-2); transform: translateY(-2px); }
+
+.band { background: var(--c); color: var(--ink); }
+.band-in { display: flex; flex-wrap: wrap; gap: 32px 56px; padding: clamp(32px, 5vw, 56px) var(--gr) clamp(32px, 5vw, 56px) var(--gl); }
+.pan { flex: 1 1 280px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.pan h2 { font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 72; font-size: clamp(2rem, 3.4vw, 2.75rem); line-height: 1; letter-spacing: -.01em; text-wrap: balance; }
+.pan p { font-family: var(--display); font-weight: 300; font-variation-settings: "SOFT" 50; font-size: clamp(1.15rem, 1.7vw, 1.4rem); line-height: 1.2; }
+.pan .count { margin-top: auto; font-size: .8rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
+.tiles { flex: 999 1 520px; min-width: 0; display: flex; gap: 24px; overflow-x: auto; padding: 10px 4px 14px; }
+.tile { display: flex; flex-direction: column; gap: 14px; width: 240px; flex: none; }
+.shot { position: relative; width: 240px; height: 320px; overflow: hidden; background: var(--bg-2); transition: transform .35s ease, box-shadow .35s ease; }
+.shot img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s ease; }
+a.tile:hover .shot, a.tile:focus-visible .shot { transform: translateY(-8px); box-shadow: 0 22px 34px rgba(0,0,0,.38); }
+a.tile:hover .shot img { transform: scale(1.06); }
+.badge { position: absolute; left: 12px; top: 12px; padding: 6px 10px; border-radius: 99px; background: rgba(20,20,22,.78); color: var(--light-ink); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.cap { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.cap b { font-family: var(--display); font-weight: 700; font-variation-settings: "SOFT" 100; font-size: 1.35rem; line-height: 1.1; }
+.cap .arr { font-size: 1.35rem; transition: transform .25s ease; }
+a.tile:hover .arr { transform: translateX(8px); }
+.tile .sub2 { font-size: .88rem; line-height: 1.35; opacity: .9; margin-top: -8px; }
+.ph { width: 240px; height: 320px; border: 2px dashed currentColor; opacity: .7; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+
+.about { padding: clamp(48px, 8vw, 112px) var(--gr) clamp(48px, 8vw, 112px) var(--gl); display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(32px, 5vw, 56px); }
+.about h2 { font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(2.4rem, 7vw, 5.5rem); line-height: 1; letter-spacing: -.02em; }
+.cols { display: flex; flex-wrap: wrap; gap: 40px 64px; }
+.cols > div { flex: 1 1 320px; min-width: 0; }
+.cols h3 { font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.cols p { max-width: 58ch; }
+.cols p + p { margin-top: 14px; }
+.soft { display: flex; flex-wrap: wrap; gap: 8px; }
+.soft span { padding: 8px 14px; border: 1px solid var(--line); border-radius: 8px; font-weight: 500; font-size: .92rem; }
+.tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.tl li { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); }
+.tl .y { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; }
+.tl b { font-family: var(--display); font-weight: 700; font-variation-settings: "SOFT" 100; font-size: 1.2rem; display: block; line-height: 1.2; }
+.tl span { color: var(--muted); font-size: .92rem; }
+.contact { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.contact .mail { font-family: var(--display); font-weight: 700; font-size: clamp(1.2rem, 3vw, 1.8rem); overflow-wrap: anywhere; }
+.btn { border: 1px solid var(--fg); background: none; padding: 10px 18px; border-radius: 99px; font-size: .82rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; transition: background .2s, color .2s; }
+.btn:hover { background: var(--fg); color: var(--bg); }
+.foot { padding: clamp(48px, 9vw, 128px) var(--gr) clamp(40px, 6vw, 80px) var(--gl); border-top: 1px solid var(--line); }
+.foot h2 { font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(3rem, 11vw, 10rem); line-height: 1; letter-spacing: -.02em; }
+.foot small { display: block; margin-top: 24px; color: var(--muted); font-size: .85rem; }
+
+/* project view */
+.phead { background: var(--c); color: var(--ink); padding: clamp(32px, 6vw, 80px) var(--gr) clamp(32px, 5vw, 64px) var(--gl); }
+.phead .cat { font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
+.phead h1 { margin-top: 14px; font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(2.6rem, 9vw, 7rem); line-height: .98; letter-spacing: -.02em; text-wrap: balance; }
+.phead p { margin-top: clamp(20px, 3vw, 36px); max-width: 60ch; font-family: var(--display); font-weight: 300; font-variation-settings: "SOFT" 50; font-size: clamp(1.2rem, 2.2vw, 1.7rem); line-height: 1.3; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: 28px; font-size: .9rem; }
+.facts dt { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .75; }
+.facts dd { margin: 2px 0 0; font-weight: 500; }
+.facts div { min-width: 0; }
+.gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(16px, 2.5vw, 32px); padding: clamp(24px, 4vw, 56px) var(--gr) clamp(24px, 4vw, 56px) var(--gl); }
+.gallery button { display: block; width: 100%; padding: 0; border: 0; background: var(--bg-2); cursor: zoom-in; }
+.gallery img { display: block; width: 100%; height: auto; }
+.next { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding: 0 var(--gr) clamp(48px, 8vw, 96px) var(--gl); }
+.next a { flex: 1 1 260px; display: flex; flex-direction: column; gap: 6px; padding: 20px; border: 1px solid var(--line); border-radius: 4px; transition: background .2s, transform .2s; }
+.next a:hover { background: var(--bg-2); transform: translateY(-3px); }
+.next small { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.next b { font-family: var(--display); font-weight: 700; font-variation-settings: "SOFT" 100; font-size: 1.5rem; line-height: 1.1; }
+.next .r { text-align: right; }
+
+.lb { position: fixed; inset: 0; z-index: 50; background: rgba(15,15,17,.95); display: none; align-items: center; justify-content: center; padding: max(16px, env(safe-area-inset-top, 0px)) var(--gr) max(16px, env(safe-area-inset-bottom, 0px)) var(--gl); }
+.lb[data-open="true"] { display: flex; }
+.lb img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.lb button { position: absolute; top: max(12px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); background: #ebebeb; color: #1e1e1e; border: 0; border-radius: 99px; font: 700 .8rem var(--text); letter-spacing: .06em; text-transform: uppercase; padding: 10px 16px; cursor: pointer; }
+
+@media (max-width: 640px) {
+  .tl li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .bar nav button { padding: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+
+<div id="app"></div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Immagine ingrandita">
+  <img id="lbimg" alt="">
+  <button type="button" id="lbclose">Chiudi</button>
+</div>
+
+<script>
+/* ---------- CONTENUTI: qui si aggiungono e si cambiano i progetti ---------- */
+var EMAIL = 'crys.figura@gmail.com';
+
+var CATEGORIES = [
+  { id: 'city',        name: 'City Branding', line: 'Identità visive e materiali istituzionali', color: '#1e2144', ink: 'light', dot: '#4b57c4' },
+  { id: 'editoria',    name: 'Editoria',      line: 'Libri e progettazione tipografica',        color: '#d46901', ink: 'dark',  dot: '#d46901' },
+  { id: 'modeling',    name: '3D modeling',   line: 'Arredamento e prodotto',                   color: '#08704d', ink: 'light', dot: '#08704d' },
+  { id: 'mockup',      name: 'Mockup',        line: 'Interfacce e app',                         color: '#a31128', ink: 'light', dot: '#a31128' },
+  { id: 'social',      name: 'Social',        line: 'Post per diversi clienti',                 color: '#740677', ink: 'light', dot: '#740677' },
+  { id: 'fotoritocco', name: 'Fotoritocco',   line: 'Prima e dopo',                             color: '#0b7480', ink: 'light', dot: '#0b7480' },
+  { id: 'copertine',   name: 'Copertine',     line: 'Artwork per CD',                           color: '#c5a423', ink: 'dark',  dot: '#c5a423' },
+  { id: 'video',       name: 'Video editing', line: 'Performance jazz e reel di prodotto',      color: '#ab1775', ink: 'light', dot: '#ab1775' }
+];
+
+/* facts: righe opzionali (Ruolo, Strumenti, Anno...) che compaiono nella pagina solo se compilate */
+var PROJECTS = [
+  { slug: 'brindisi', cat: 'city', title: 'Brindisi', tile: 'img/t-brindisi.jpg', tag: '',
+    sub: 'Logo, palette, icone e materiali',
+    text: 'Identità visiva per la città di Brindisi: un logo costruito sulle lettere BRNDSI, una palette di tre colori e un set di icone per luoghi e servizi. Il sistema è applicato a mappa dei quartieri, brochure, schede dei monumenti e carta intestata.',
+    facts: [],
+    images: [['img/city-identity.jpg', 'Logo BRNDSI, palette in due blu e bianco, concept geometrico e 20 icone per luoghi e servizi della città'],
+             ['img/city-materials.jpg', 'Materiali del city branding: mappa dei quartieri, brochure con cubi illustrati, schede dei monumenti e carta intestata']] },
+  { slug: 'vignelli', cat: 'editoria', title: 'Massimo Vignelli', tile: 'img/t-vignelli.jpg', tag: 'Sfoglia',
+    sub: 'Libro sul design e la tipografia',
+    text: 'Libro su Massimo Vignelli e sulla progettazione tipografica. Comprende un carattere, con i suoi glifi e i mockup di cappellino e felpa, e le pagine interne dedicate al designer.',
+    facts: [],
+    images: [['img/editoria-vignelli.jpg', 'Libro «noname albumxalbumx»: copertina tipografica, mockup di cappellino e felpa, specimen del carattere e pagine su Massimo Vignelli']] },
+  { slug: 'edelmann', cat: 'editoria', title: 'Heinz Edelmann', tile: 'img/t-edelmann.jpg', tag: 'Sfoglia',
+    sub: 'Libro sull’illustratore di Yellow Submarine',
+    text: 'Libro su Heinz Edelmann, illustratore e graphic designer. La copertina unisce il ritratto alle sue immagini; all’interno ci sono le pagine sulla copertina di Graphis e sul film Yellow Submarine.',
+    facts: [],
+    images: [['img/editoria-edelmann.jpg', 'Libro su Heinz Edelmann: copertina con ritratto e illustrazioni, pagine su Graphis 113 e su Yellow Submarine']] },
+  { slug: 'studio-modulare', cat: 'modeling', title: 'Studio modulare', tile: 'img/t-studio.jpg', tag: 'Ruota in 3D',
+    sub: 'Stanza costruita su elementi modulari',
+    text: 'Progettazione di uno studio basato su elementi modulari: tubi e giunti, mensole, pannelli, sedute, lampade e un cavalletto. Gli elementi sono modellati in Rhino e combinati nella stanza.',
+    facts: [['Strumenti', 'Rhino']],
+    images: [['img/3d-studio.jpg', 'Render di uno studio con parete di mattoni, struttura di tubi, mensole, casse audio, scrivania e altalena sospesa, con i moduli singoli a sinistra']] },
+  { slug: 'utensile', cat: 'modeling', title: 'Utensile da cucina', tile: 'img/t-utensile.jpg', tag: 'Ruota in 3D',
+    sub: 'Rullo con lame, due versioni',
+    text: 'Progettazione di un utensile da cucina a rullo con lame circolari e impugnatura, in due versioni, accompagnata da schizzi che mostrano come si usa.',
+    facts: [['Strumenti', 'Rhino']],
+    images: [['img/3d-utensile.jpg', 'Due versioni di un utensile da cucina a rullo con lame circolari e schizzi d’uso']] },
+  { slug: 'peeps', cat: 'mockup', title: 'Peeps', tile: 'img/t-peeps.jpg', tag: '',
+    sub: 'App per creativi, dall’idea ai mockup',
+    text: 'Ideazione di un’app per creativi e realizzazione dei mockup. Gli annunci mostrano avanzamento e pagamenti; il profilo raccoglie skills, attrezzatura e gusti personali.',
+    facts: [],
+    images: [['img/mockup-peeps.jpg', 'Schermate dell’app Peeps: elenco di annunci e profilo utente']] },
+  { slug: 'social', cat: 'social', title: 'Post per i clienti', tile: 'img/t-social.jpg', tag: '',
+    sub: 'Prodotti, ricorrenze e contenuti informativi',
+    text: 'Produzione di post per i social di diversi clienti: presentazione di prodotti, auguri per le ricorrenze e contenuti informativi.',
+    facts: [],
+    images: [['img/social.jpg', 'Griglia di post per clienti diversi: prodotti, auguri di Ferragosto, grafiche informative']] },
+  { slug: 'fotoritocco', cat: 'fotoritocco', title: 'Ritratto', tile: 'img/t-fotoritocco.jpg', tag: 'Prima / dopo',
+    sub: 'Correzione di colore e sfondo',
+    text: 'Ritocco di un ritratto: colore della camicia, della pelle e dello sfondo corretti rispetto alla foto di partenza.',
+    facts: [],
+    images: [['img/fotoritocco.jpg', 'Ritratto prima e dopo il fotoritocco']] },
+  { slug: 'copertine-cd', cat: 'copertine', title: 'Artwork CD', tile: 'img/t-copertine.jpg', tag: '',
+    sub: 'Due copertine e dischi',
+    text: 'Artwork per CD: due copertine con i relativi dischi, una con collage fotografico e fiori in bianco e nero, una in stile pop art.',
+    facts: [],
+    images: [['img/copertine.jpg', 'Due artwork per CD con i relativi dischi']] },
+  { slug: 'jazz-e-reel', cat: 'video', title: 'Fulvio Tomaino’s Ensemble', tile: 'img/t-video.jpg', tag: 'Video',
+    sub: 'Ripresa e montaggio, più reel per prodotto',
+    text: 'Ripresa e montaggio di una performance jazz del Fulvio Tomaino’s Ensemble, e un reel verticale per un prodotto.',
+    facts: [],
+    images: [['img/video.jpg', 'Fotogramma della performance jazz e reel verticale su smartphone']] }
+];
+
+/* progetti in arrivo: compaiono come segnaposto in home finché non hanno materiale */
+var COMING = [
+  { cat: 'city', title: 'Eurochocolate', sub: 'Rebranding' },
+  { cat: 'city', title: 'Passi', sub: 'Mostra di Pirri: brand e applicativo interattivo' },
+  { cat: 'editoria', title: 'Sfoghi e memorie', sub: 'Copertina del libro sull’adolescenza' }
+];
+
+var ABOUT = {
+  role: 'Graphic designer junior',
+  place: 'Roma',
+  intro: [
+    'Progetto contenuti fisici e digitali: identità visive, mockup, contenuti per i social, ripresa e montaggio video, materiali editoriali e packaging. Seguo ogni lavoro dal concept alla consegna, curando gerarchia visiva, leggibilità ed estetica per il canale e il target.',
+    'Ho lavorato in team di marketing, comunicazione e design. Il mio percorso tocca anche marketing, sociologia, informatica e musica, e mi porta curiosità e attenzione alle persone con cui lavoro.'
+  ],
+  software: ['Photoshop', 'Illustrator', 'InDesign', 'DaVinci Resolve', 'After Effects', 'Premiere', 'Figma', 'AutoCAD', 'Rhino'],
+  languages: [['Italiano', 'madrelingua'], ['Inglese', 'certificazione B2']],
+  timeline: [
+    ['2025 – oggi', 'Sapienza Università di Roma', 'Laurea magistrale in Design, Comunicazione Visiva e Multimediale'],
+    ['2025', 'Woom', 'Marketing e comunicazione, graphic design, video editing'],
+    ['2023', 'DeVision Communication', 'Tirocinio · Bari'],
+    ['2020 – 2024', 'Politecnico di Bari', 'Laurea triennale in Disegno Industriale'],
+    ['2019', 'MYC', 'Tirocinio · Mosta, Malta']
+  ]
+};
+
+/* ---------- RENDER ---------- */
+var app = document.getElementById('app');
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function cat(id) { return CATEGORIES.filter(function (c) { return c.id === id; })[0]; }
+function inkVar(c) { return c.ink === 'dark' ? 'var(--dark-ink)' : 'var(--light-ink)'; }
+
+function tile(p) {
+  return '<a class="tile" href="#' + p.slug + '"><div class="shot"><img src="' + p.tile + '" alt="" loading="lazy">' +
+    (p.tag ? '<span class="badge">' + esc(p.tag) + '</span>' : '') + '</div>' +
+    '<div class="cap"><b>' + esc(p.title) + '</b><span class="arr" aria-hidden="true">→</span></div>' +
+    '<div class="sub2">' + esc(p.sub) + '</div></a>';
+}
+function placeholder(p) {
+  return '<div class="tile"><div class="ph">In arrivo</div><div class="cap"><b>' + esc(p.title) + '</b></div><div class="sub2">' + esc(p.sub) + '</div></div>';
+}
+function band(c) {
+  var ps = PROJECTS.filter(function (p) { return p.cat === c.id; });
+  var cs = COMING.filter(function (p) { return p.cat === c.id; });
+  var count = ps.length + (ps.length === 1 ? ' progetto' : ' progetti') + (cs.length ? ' · ' + cs.length + ' in arrivo' : '');
+  return '<section class="band" id="cat-' + c.id + '" style="--c:' + c.color + ';--ink:' + inkVar(c) + '"><div class="band-in">' +
+    '<div class="pan"><h2>' + esc(c.name) + '</h2><p>' + esc(c.line) + '</p><span class="count">' + count + '</span></div>' +
+    '<div class="tiles">' + ps.map(tile).join('') + cs.map(placeholder).join('') + '</div></div></section>';
+}
+
+function home() {
+  var a = ABOUT;
+  return '<header class="bar"><a class="mark" href="#">C. Figura</a><nav aria-label="Sezioni">' +
+    '<button type="button" data-go="projects">Progetti</button><button type="button" data-go="about">Chi sono</button><button type="button" data-go="contact">Contatti</button></nav></header>' +
+    '<main><section class="hero"><h1>Cristian Figura</h1><div class="sub">portfolio</div>' +
+    '<p class="lead">' + esc(a.role) + ' a ' + esc(a.place) + '. Identità visive, libri, 3D, interfacce, social, fotoritocco, artwork musicali e video.</p>' +
+    '<div class="chips" id="projects">' + CATEGORIES.map(function (c) { return '<button type="button" class="chip" style="--c:' + c.dot + '" data-go="cat-' + c.id + '"><i></i>' + esc(c.name) + '</button>'; }).join('') + '</div></section>' +
+    CATEGORIES.map(band).join('') +
+    '<section class="about" id="about"><h2>Chi sono</h2><div class="cols"><div><h3>Profilo</h3>' + a.intro.map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') +
+    '<h3 style="margin-top:32px">Software</h3><div class="soft">' + a.software.map(function (s) { return '<span>' + esc(s) + '</span>'; }).join('') + '</div>' +
+    '<h3 style="margin-top:32px">Lingue</h3><p>' + a.languages.map(function (l) { return esc(l[0]) + ', ' + esc(l[1]); }).join(' · ') + '</p></div>' +
+    '<div><h3>Esperienze e studi</h3><ul class="tl">' + a.timeline.map(function (t) { return '<li><span class="y">' + esc(t[0]) + '</span><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span></div></li>'; }).join('') + '</ul></div></div>' +
+    '<div id="contact"><div class="cols"><div><h3>Contatti</h3><div class="contact"><span class="mail">' + esc(EMAIL) + '</span><button type="button" class="btn" id="copymail">Copia email</button></div></div></div></div></section></main>' +
+    '<footer class="foot"><h2>a presto!</h2><small>Cristian Figura · portfolio</small></footer>';
+}
+
+function project(p) {
+  var c = cat(p.cat);
+  var i = PROJECTS.indexOf(p);
+  var prev = PROJECTS[(i + PROJECTS.length - 1) % PROJECTS.length];
+  var next = PROJECTS[(i + 1) % PROJECTS.length];
+  var facts = p.facts.length ? '<dl class="facts">' + p.facts.map(function (f) { return '<div><dt>' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd></div>'; }).join('') + '</dl>' : '';
+  return '<header class="bar"><a class="mark" href="#">C. Figura</a><a class="back" href="#">← Tutti i progetti</a></header>' +
+    '<main><section class="phead" style="--c:' + c.color + ';--ink:' + inkVar(c) + '"><div class="cat">' + esc(c.name) + '</div><h1>' + esc(p.title) + '</h1><p>' + esc(p.text) + '</p>' + facts + '</section>' +
+    '<section class="gallery">' + p.images.map(function (im) { return '<button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '"></button>'; }).join('') + '</section>' +
+    '<nav class="next" aria-label="Altri progetti"><a href="#' + prev.slug + '"><small>← Precedente</small><b>' + esc(prev.title) + '</b></a><a class="r" href="#' + next.slug + '"><small>Successivo →</small><b>' + esc(next.title) + '</b></a></nav></main>';
+}
+
+function route() {
+  var h = location.hash.replace('#', '');
+  var p = PROJECTS.filter(function (x) { return x.slug === h; })[0];
+  app.innerHTML = p ? project(p) : home();
+  document.title = p ? p.title + ' · Cristian Figura' : 'Cristian Figura Portfolio';
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+route();
+
+app.addEventListener('click', function (e) {
+  var go = e.target.closest('[data-go]');
+  if (go) {
+    var el = document.getElementById(go.getAttribute('data-go'));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  var z = e.target.closest('[data-zoom]');
+  if (z) { openLb(z.getAttribute('data-zoom'), z.getAttribute('data-alt'), z); return; }
+  if (e.target.id === 'copymail') {
+    var b = e.target;
+    function done(t) { b.textContent = t; setTimeout(function () { b.textContent = 'Copia email'; }, 1800); }
+    try { navigator.clipboard.writeText(EMAIL).then(function () { done('Copiata'); }, function () { done('Seleziona e copia'); }); }
+    catch (err) { done('Seleziona e copia'); }
+  }
+});
+
+/* lightbox */
+var lb = document.getElementById('lb'), lbimg = document.getElementById('lbimg'), lbclose = document.getElementById('lbclose'), lastBtn = null;
+function openLb(src, alt, btn) { lbimg.src = src; lbimg.alt = alt || ''; lb.setAttribute('data-open', 'true'); lastBtn = btn; lbclose.focus(); }
+function closeLb() { lb.removeAttribute('data-open'); lbimg.removeAttribute('src'); if (lastBtn && document.body.contains(lastBtn)) lastBtn.focus(); }
+lbclose.addEventListener('click', closeLb);
+lb.addEventListener('click', function (e) { if (e.target === lb) closeLb(); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lb.getAttribute('data-open')) closeLb(); });
+</script>
+
+</html>
