@@ -67,8 +67,8 @@ try {
   function show(name) {
     current = name;
     for (const k in groups) groups[k].list.forEach(o => { o.visible = (k === name); });
-    const box = new THREE.Box3();
-    groups[name].list.forEach(o => box.expandByObject(o));
+    const cj = groups[name].list[0].userData.caja;
+    const box = new THREE.Box3(new THREE.Vector3(...cj[0]), new THREE.Vector3(...cj[1]));
     const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
     const r = Math.max(size.x, size.y, size.z) * 0.62 || 0.05;
     const dist = r / Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
