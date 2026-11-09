@@ -230,6 +230,20 @@ a.card:hover .shot img { transform: scale(1.05); }
 .bookbox .ctl button { padding: 9px 16px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--fg); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
 .bookbox .ctl button:hover { background: var(--hover); }
 
+/* gerarchia pagina progetto */
+.phead .lead { margin-top: clamp(18px, 3vw, 32px); max-width: 30ch; font-family: var(--display); font-weight: 400; font-size: clamp(1.5rem, 3.2vw, 2.4rem); line-height: 1.2; text-wrap: balance; }
+.phead .lead + p { margin-top: 18px; font-size: 1.02rem; opacity: .92; }
+.phead .sub { margin-top: 14px; font-size: .95rem; font-weight: 500; opacity: .85; }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 18px; }
+.jump a { padding: 8px 14px; border: 1px solid var(--line); border-radius: 99px; font-size: .8rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); transition: background .2s, color .2s; }
+.jump a:hover { background: var(--hover); color: var(--fg); }
+.brief, .brand, .try, .bookbox, .gallery, .parts { scroll-margin-top: 80px; }
+.gallery figure { margin: 0; }
+.gallery figcaption { margin-top: 8px; font-size: .86rem; color: var(--muted); max-width: 70ch; }
+.gh { font-family: var(--display); font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.1; padding-top: clamp(28px, 4vw, 56px); }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 60; padding: 10px 16px; background: var(--fg); color: var(--bg); border-radius: 6px; font-weight: 700; }
+.skip:focus { top: 12px; }
+
 .next { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-bottom: clamp(48px, 8vw, 96px); }
 .next a { flex: 1 1 260px; display: flex; flex-direction: column; gap: 6px; padding: 20px; border: 1px solid var(--line); border-radius: 6px; transition: background .2s, transform .2s; }
 .next a:hover { background: var(--hover); transform: translateY(-3px); }
@@ -311,15 +325,14 @@ var PROJECTS = [
   { slug: 'passi', sec: 'branding', band: 'branding', title: 'Passi', cover: 'img/passi-maglietta.webp', badge: 'Applicativo', badgeLive: true,
     sub: 'Identità visiva · exhibition design · creative coding',
     text: 'Brand e applicativo interattivo per la mostra di Pirri. Il logo è costruito a moduli quadrati, come un pixel. Nel programma il visitatore inserisce il proprio nome e carica o disegna il suo percorso. Il percorso diventa un pattern a moduli che compare un passo alla volta, accompagnato da un click sonoro. Il pattern si applica poi a una maglietta e a una cartolina e si salva come immagine. L’area del pattern è proporzionata all’installazione: 266 × 720 pixel. Lo stesso pattern è applicato anche a una tote bag.',
-    facts: [['Strumenti', 'Processing, JavaScript']],
+    facts: [],
     brief: { software: ['Processing', 'JavaScript'] },
     brand: { logo: { src: 'passi/logo-passi.png', bg: '#F1ECDF' },
              type: [{ name: 'Montserrat', sample: 'PASSI', weight: 500, spacing: '.3em', note: 'Titoli e interfaccia dell’applicativo, in maiuscolo spaziato' }],
              palette: [['Chiaro', '#F1ECDF'], ['Tortora', '#968B7C'], ['Nero', '#111111']] },
     open: { href: 'passi/', label: 'Apri l’applicativo' },
     embed: { src: 'passi/', kind: 'phone', title: 'Prova l’applicativo', text: 'Inserisci il tuo nome, usa il percorso d’esempio o disegnane uno, e guarda comporsi il tuo pattern. Con l’audio attivo senti il click di ogni passo.' },
-    images: [['img/passi-logo.webp', 'Logo Passi: moduli quadrati neri e scritta PASSI distanziata'],
-             ['img/passi-maglietta.webp', 'Maglietta bianca: logo sul fronte e pattern del percorso sul retro'],
+    images: [['img/passi-maglietta.webp', 'Maglietta bianca: logo sul fronte e pattern del percorso sul retro'],
              ['img/passi-tote.webp', 'Tote bag bianca con una fascia del pattern Passi in beige sul fronte'],
              ['img/passi-cartolina.webp', 'Cartolina Passi con la scritta «Grazie per aver percorso questi spazi con il tuo passo. Ogni attraversamento aggiunge un nuovo ritmo all’opera»'],
              ['img/passi-pattern.webp', 'Pattern generato dal percorso, in verticale e in orizzontale, su fondo chiaro e scuro']] },
@@ -459,10 +472,10 @@ function tags(a) { return '<div class="tags">' + a.map(function (s) { return '<s
 
 function home() {
   var a = ABOUT;
-  return '<header class="bar"><div class="bar-in"><a class="mark" href="#">Cristian Figura <span>/ portfolio</span></a>' +
+  return '<a class="skip" href="#main" data-jump>Vai al contenuto</a><header class="bar"><div class="bar-in"><a class="mark" href="#">Cristian Figura <span>/ portfolio</span></a>' +
     '<nav aria-label="Sezioni">' + SECTIONS.map(function (s) { return '<a href="#' + s.id + '" data-nav="' + s.id + '">' + esc(s.nav) + '</a>'; }).join('') +
     '<a href="#profilo" data-nav="profilo">Profilo</a><a href="#contatti" data-nav="contatti">Contatti</a></nav>' + themeBtn() + '</div></header>' +
-    '<main><section class="hero"><div class="wrap hero-in"><div>' +
+    '<main id="main"><section class="hero"><div class="wrap hero-in"><div>' +
     '<h1>Cristian<br>Figura</h1><div class="kind">portfolio</div>' +
     '<p class="lead">' + esc(a.role) + ' a ' + esc(a.place) + '. Identità visive, libri, 3D, interfacce, visual design e video: dal concept alla consegna.</p>' +
     '<nav class="chips" aria-label="Categorie">' + SECTIONS.map(function (s) { return '<a href="#' + s.id + '">' + esc(s.nav) + '</a>'; }).join('') + '</nav>' +
@@ -489,12 +502,12 @@ function brief(p) {
   if (b.soft && b.soft.length) c.push('<div><h3>Soft skills</h3><div class="tags">' + tagsOf(b.soft) + '</div></div>');
   if (b.metodo && b.metodo.length) c.push('<div><h3>Metodo</h3><p>' + b.metodo.map(esc).join('<br>') + '</p></div>');
   if (!c.length) return '';
-  return '<section class="brief wrap"><h2>Come l’ho fatto</h2><div class="bgrid">' + c.join('') + '</div></section>';
+  return '<section class="brief wrap" id="s-brief"><h2>Come l’ho fatto</h2><div class="bgrid">' + c.join('') + '</div></section>';
 }
 function lum(h) { var n = parseInt(h.slice(1), 16), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255; return (0.299 * r + 0.587 * g + 0.114 * b) / 255; }
 function brandKit(p) {
   var b = p.brand; if (!b) return '';
-  var h = '<section class="brand wrap"><h2>Il brand</h2><div class="bk">';
+  var h = '<section class="brand wrap" id="s-brand"><h2>Il brand</h2><div class="bk">';
   if (b.logo) h += '<section class="k-logo"><h3>Logo</h3><div class="lg" style="background:' + b.logo.bg + '"><img src="' + b.logo.src + '" alt="Logo ' + esc(p.title) + '"></div></section>';
   var full = !b.palette ? ' full' : '';
   if (b.type) h += '<section class="k-type' + full + '"><h3>Tipografia</h3>' + b.type.map(function (t) { return '<div class="spec"><b style="font-family:' + esc(t.name) + ',sans-serif;font-weight:' + (t.weight || 500) + (t.spacing ? ';letter-spacing:' + t.spacing : '') + '">' + esc(t.sample) + '</b><small>' + esc(t.name) + (t.note ? ' · ' + esc(t.note) : '') + '</small></div>'; }).join('') + '</section>';
@@ -504,7 +517,7 @@ function brandKit(p) {
 }
 function bookBox(p) {
   var k = p.book; if (!k) return '';
-  return '<section class="bookbox wrap"><h2>Il libro in 3D</h2><p class="hint">Trascina per girarlo da ogni lato.</p>' +
+  return '<section class="bookbox wrap" id="s-libro"><h2>Il libro in 3D</h2><p class="hint">Trascina per girarlo da ogni lato.</p>' +
     '<div class="stage" id="stage"><div class="book3d" id="book3d" style="--w:' + k.w + 'px;--h:' + k.h + 'px;--t:' + k.t + 'px;--cc:' + k.color + '"><i class="f" style="background-image:url(' + k.cover + ')"></i><i class="b"></i><i class="s"></i><i class="e"></i><i class="tp"></i><i class="bt"></i></div></div>' +
     '<div class="ctl"><button type="button" data-rot="-28,-8">Fronte</button><button type="button" data-rot="152,-8">Retro</button><button type="button" data-rot="-90,0">Dorso</button><button type="button" data-rot="-28,-70">Dall’alto</button></div></section>';
 }
@@ -519,6 +532,16 @@ function initBook() {
   document.querySelectorAll('[data-rot]').forEach(function (b) { b.addEventListener('click', function () { var v = b.getAttribute('data-rot').split(','); ry = +v[0]; rx = +v[1]; ap(); }); });
 }
 
+function leadText(t) {
+  var m = t.match(/^(.+?[.!?])\s+(.+)$/);
+  if (!m || m[1].length > 140) return '<p>' + esc(t) + '</p>';
+  return '<p class="lead">' + esc(m[1]) + '</p><p>' + esc(m[2]) + '</p>';
+}
+function jumpNav(items) {
+  if (items.length < 3) return '';
+  return '<nav class="jump wrap" aria-label="In questa pagina">' + items.map(function (i) { return '<a href="' + i[0] + '" data-jump>' + esc(i[1]) + '</a>'; }).join('') + '</nav>';
+}
+
 function project(p) {
   var s = sec(p.sec), b = BANDS[p.band];
   var i = PROJECTS.indexOf(p);
@@ -528,15 +551,16 @@ function project(p) {
   var cta = p.open ? '<a class="cta" href="' + p.open.href + '">' + esc(p.open.label) + ' <span class="arr" aria-hidden="true">→</span></a>' : '';
   var embed = '';
   if (p.embed) {
-    embed = '<section class="try wrap" aria-labelledby="try-t"><div class="try-head"><div><h2 id="try-t">' + esc(p.embed.title) + '</h2><p>' + esc(p.embed.text) + '</p></div>' +
+    embed = '<section class="try wrap" id="s-prova" aria-labelledby="try-t"><div class="try-head"><div><h2 id="try-t">' + esc(p.embed.title) + '</h2><p>' + esc(p.embed.text) + '</p></div>' +
       '<a href="' + p.embed.src + '">Apri a schermo intero ↗</a></div>' +
       '<div class="frame frame--' + p.embed.kind + '"><iframe src="' + p.embed.src + (p.embed.kind === 'phone' || p.embed.src.indexOf('modelli/') === 0 ? '?theme=' + document.documentElement.getAttribute('data-theme') : '') + '" title="' + esc(p.embed.title) + '" loading="lazy" allow="autoplay; fullscreen"></iframe></div></section>';
   }
-  return '<header class="bar"><div class="bar-in"><a class="mark" href="#">Cristian Figura <span>/ portfolio</span></a><a class="back" href="#' + s.id + '">← ' + esc(s.nav) + '</a>' + themeBtn() + '</div></header>' +
-    '<main><section class="phead" style="--c:' + b.c + ';--ink:' + b.ink + '"><div class="wrap"><div class="cat">' + esc(s.name) + (p.group ? ' · ' + esc(p.group) : '') + '</div><h1>' + esc(p.title) + '</h1><p>' + esc(p.text) + '</p>' + facts + '<div>' + cta + '</div></div></section>' +
+  return '<a class="skip" href="#main" data-jump>Vai al contenuto</a><header class="bar"><div class="bar-in"><a class="mark" href="#">Cristian Figura <span>/ portfolio</span></a><a class="back" href="#' + s.id + '">← ' + esc(s.nav) + '</a>' + themeBtn() + '</div></header>' +
+    '<main id="main"><section class="phead" style="--c:' + b.c + ';--ink:' + b.ink + '"><div class="wrap"><div class="cat">' + esc(s.name) + (p.group ? ' · ' + esc(p.group) : '') + '</div><h1>' + esc(p.title) + '</h1>' + (p.sub ? '<div class="sub">' + esc(p.sub) + '</div>' : '') + leadText(p.text) + facts + '<div>' + cta + '</div></div></section>' +
+    jumpNav([p.brand && ['#s-brand', 'Il brand'], brief(p) && ['#s-brief', 'Come l’ho fatto'], p.embed && ['#s-prova', 'Provalo'], p.book && ['#s-libro', 'Libro 3D'], ['#s-immagini', 'Immagini'], p.parts && ['#s-parti', p.partsTitle || 'Dettagli']].filter(Boolean)) +
     brandKit(p) + brief(p) + embed + bookBox(p) +
-    '<section class="gallery wrap">' + p.images.map(function (im) { return '<button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '"></button>'; }).join('') + '</section>' +
-    (p.parts ? '<section class="parts wrap"><h2>' + esc(p.partsTitle || 'Dettagli') + '</h2><div class="pgal">' + p.parts.map(function (im) { return '<figure><button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '" loading="lazy"></button><figcaption>' + esc(im[1]) + '</figcaption></figure>'; }).join('') + '</div></section>' : '') +
+    '<h2 class="gh wrap" id="s-immagini">' + (p.imagesTitle || 'Immagini del progetto') + '</h2><section class="gallery wrap" aria-labelledby="s-immagini">' + p.images.map(function (im) { return '<figure><button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '" loading="lazy"></button><figcaption>' + esc(im[1]) + '</figcaption></figure>'; }).join('') + '</section>' +
+    (p.parts ? '<section class="parts wrap" id="s-parti"><h2>' + esc(p.partsTitle || 'Dettagli') + '</h2><div class="pgal">' + p.parts.map(function (im) { return '<figure><button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '" loading="lazy"></button><figcaption>' + esc(im[1]) + '</figcaption></figure>'; }).join('') + '</div></section>' : '') +
     '<nav class="next wrap" aria-label="Altri progetti"><a href="#' + prev.slug + '"><small>← Precedente</small><b>' + esc(prev.title) + '</b></a><a class="r" href="#' + next.slug + '"><small>Successivo →</small><b>' + esc(next.title) + '</b></a></nav></main>';
 }
 
@@ -566,6 +590,10 @@ function route() {
   else if (fresh || !h) window.scrollTo({ top: 0, behavior: fresh ? 'instant' : 'smooth' });
   setActive();
 }
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('[data-jump]'); if (!a) return;
+  e.preventDefault(); var t = document.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 window.addEventListener('hashchange', route);
 route();
 
