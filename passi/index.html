@@ -530,6 +530,37 @@ canvas { display: block; width: 426px; height: 749px; border-radius: 6px; user-s
     text(ctx, 'Carica il percorso', W / 2, ySecond, { size: 20, weight: 500 });
     if (statoFile) text(ctx, statoFile, W / 2, yBtnGrande + 66, { size: 11, weight: erroreFile ? 900 : 500 });
   }
+  /* percorso disegnato: si semplifica il tratto in pochi punti e lo si rende ortogonale come quando si carica un file */
+  function rdp(pts, eps) {
+    if (pts.length < 3) return pts.slice();
+    var a = pts[0], b = pts[pts.length - 1], dm = 0, im = 0, dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+    for (var i = 1; i < pts.length - 1; i++) {
+      var d = L === 0 ? Math.hypot(pts[i].x - a.x, pts[i].y - a.y) : Math.abs(dy * pts[i].x - dx * pts[i].y + b.x * a.y - b.y * a.x) / L;
+      if (d > dm) { dm = d; im = i; }
+    }
+    if (dm <= eps) return [a, b];
+    return rdp(pts.slice(0, im + 1), eps).slice(0, -1).concat(rdp(pts.slice(im), eps));
+  }
+  function puntiDisegnati() {
+    var s = rdp(drawPts, 26), out = [];
+    for (var i = 0; i < s.length; i++) {
+      var p = s[i];
+      if (!out.length || Math.hypot(p.x - out[out.length - 1].x, p.y - out[out.length - 1].y) >= 40 || i === s.length - 1) out.push(p);
+    }
+    if (out.length > 2 && Math.hypot(out[out.length - 1].x - out[out.length - 2].x, out[out.length - 1].y - out[out.length - 2].y) < 40) out.splice(out.length - 2, 1);
+    return out;
+  }
+  function ortoPx(pts) {
+    var q = pts.map(function (p) { return P(Math.round(p.x / CELL), Math.round(p.y / CELL)); });
+    var r = [q[0]];
+    for (var i = 0; i < q.length - 1; i++) {
+      var a = q[i], b = q[i + 1], dx = Math.abs(b.x - a.x), dy = Math.abs(b.y - a.y);
+      var ang = dy >= dx ? P(a.x, b.y) : P(b.x, a.y);
+      if (!same(r[r.length - 1], ang)) r.push(ang);
+      if (!same(r[r.length - 1], b)) r.push(P(b.x, b.y));
+    }
+    return r;
+  }
   function drawDisegna() {
     bg();
     text(ctx, 'Disegna il tuo percorso', W / 2, MARG + BTN_H / 2, { size: 14, weight: 500 });
@@ -538,18 +569,26 @@ canvas { display: block; width: 426px; height: 749px; border-radius: 6px; user-s
     ctx.strokeRect(xArea + 0.5, yArea + 0.5, SCR_W - 1, SCR_H - 1);
     ctx.restore();
     if (!drawPts.length) {
-      text(ctx, 'Trascina qui dentro\nper tracciare i tuoi passi', W / 2, yArea + SCR_H / 2, { size: 12.5, color: css(PATT[palette], 0.8) });
+      text(ctx, 'Trascina qui dentro\nper tracciare i tuoi passi:\nil percorso diventa ortogonale', W / 2, yArea + SCR_H / 2, { size: 12.5, color: css(PATT[palette], 0.8) });
     } else {
-      ctx.strokeStyle = css(PATT[palette], 0.9); ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      var pv = ortoPx(puntiDisegnati());
+      ctx.strokeStyle = css(PATT[palette], 0.28); ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
       ctx.beginPath();
       for (var i = 0; i < drawPts.length; i++) {
         var sx = xArea + drawPts[i].x * SCR_W / AREA_W, sy = yArea + drawPts[i].y * SCR_H / AREA_H;
         if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
       }
       ctx.stroke();
+      ctx.strokeStyle = css(PATT[palette], 0.95); ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (var k = 0; k < pv.length; k++) {
+        var qx = xArea + pv[k].x * CELL * SCR_W / AREA_W, qy = yArea + pv[k].y * CELL * SCR_H / AREA_H;
+        if (k === 0) ctx.moveTo(qx, qy); else ctx.lineTo(qx, qy);
+      }
+      ctx.stroke();
       ctx.fillStyle = css(PATT[palette]);
-      for (var j = 0; j < drawPts.length; j++) {
-        ctx.beginPath(); ctx.arc(xArea + drawPts[j].x * SCR_W / AREA_W, yArea + drawPts[j].y * SCR_H / AREA_H, 3, 0, Math.PI * 2); ctx.fill();
+      for (var j = 0; j < pv.length; j++) {
+        ctx.beginPath(); ctx.arc(xArea + pv[j].x * CELL * SCR_W / AREA_W, yArea + pv[j].y * CELL * SCR_H / AREA_H, 3, 0, Math.PI * 2); ctx.fill();
       }
     }
   }
@@ -825,8 +864,9 @@ canvas { display: block; width: 426px; height: 749px; border-radius: 6px; user-s
       case 'drawBack': setFase('file'); break;
       case 'drawClear': drawPts = []; break;
       case 'drawDone':
-        if (drawPts.length >= 2) {
-          var txt = drawPts.map(function (p) { return Math.round(p.x) + ',' + Math.round(p.y); }).join('\n');
+        var dp = puntiDisegnati();
+        if (dp.length >= 2) {
+          var txt = dp.map(function (p) { return Math.round(p.x) + ',' + Math.round(p.y); }).join('\n');
           caricaDaTesto(txt, 'Percorso disegnato');
           if (coordCaricate) setFase('file');
         }
