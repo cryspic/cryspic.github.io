@@ -306,6 +306,7 @@ var PROJECTS = [
     sub: 'Rullo con lame, due versioni',
     text: 'Progettazione di un utensile da cucina a rullo con lame circolari e impugnatura, in due versioni, accompagnata da schizzi che mostrano come si usa.',
     facts: [['Strumenti', 'Rhino']],
+    embed: { src: 'modelli/utensile/', kind: 'site', title: 'Il modello 3D', text: 'Il file di Rhino così com’è: l’esploso, l’oggetto montato per quando non si usa e le due versioni. Trascina per ruotare, scorri o pizzica per avvicinarti ai denti dei dischi.' },
     images: [['img/3d/utensile-2.webp', 'Rendering delle due versioni dell’utensile: a sinistra con un solo rullo, a destra con cinque dischi dentati e impugnatura nera'],
              ['img/3d/utensile-1.webp', 'Versione con cinque dischi dentati vista in assonometria'],
              ['img/3d-utensile.jpg', 'Due versioni di un utensile da cucina a rullo con lame circolari e schizzi d’uso']] },
@@ -440,7 +441,7 @@ function project(p) {
   if (p.embed) {
     embed = '<section class="try wrap" aria-labelledby="try-t"><div class="try-head"><div><h2 id="try-t">' + esc(p.embed.title) + '</h2><p>' + esc(p.embed.text) + '</p></div>' +
       '<a href="' + p.embed.src + '">Apri a schermo intero ↗</a></div>' +
-      '<div class="frame frame--' + p.embed.kind + '"><iframe src="' + p.embed.src + (p.embed.kind === 'phone' ? '?theme=' + document.documentElement.getAttribute('data-theme') : '') + '" title="' + esc(p.embed.title) + '" loading="lazy" allow="autoplay; fullscreen"></iframe></div></section>';
+      '<div class="frame frame--' + p.embed.kind + '"><iframe src="' + p.embed.src + (p.embed.kind === 'phone' || p.embed.src.indexOf('modelli/') === 0 ? '?theme=' + document.documentElement.getAttribute('data-theme') : '') + '" title="' + esc(p.embed.title) + '" loading="lazy" allow="autoplay; fullscreen"></iframe></div></section>';
   }
   return '<header class="bar"><div class="bar-in"><a class="mark" href="#">Cristian Figura <span>/ portfolio</span></a><a class="back" href="#' + s.id + '">← ' + esc(s.nav) + '</a>' + themeBtn() + '</div></header>' +
     '<main><section class="phead" style="--c:' + b.c + ';--ink:' + b.ink + '"><div class="wrap"><div class="cat">' + esc(s.name) + (p.group ? ' · ' + esc(p.group) : '') + '</div><h1>' + esc(p.title) + '</h1><p>' + esc(p.text) + '</p>' + facts + '<div>' + cta + '</div></div></section>' +

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Utensile da cucina · modello 3D</title>
+<style>
+:root { --bg: #f3f1ec; --fg: #161616; --muted: #5b5b60; --btn: rgba(255,255,255,.85); --line: rgba(0,0,0,.18); color-scheme: light; }
+:root[data-theme="dark"] { --bg: #111113; --fg: #ececec; --muted: #a8a8ae; --btn: rgba(30,30,32,.85); --line: rgba(255,255,255,.2); color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: "Helvetica Neue", Arial, sans-serif; overflow: hidden; }
+#c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+#c:active { cursor: grabbing; }
+.ui { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; pointer-events: none; }
+.ui > * { pointer-events: auto; }
+.hint { font-size: 12px; color: var(--muted); background: var(--btn); padding: 7px 12px; border-radius: 99px; border: 1px solid var(--line); }
+.btns { display: flex; gap: 8px; }
+button { font: 700 12px/1 "Helvetica Neue", Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--fg); background: var(--btn); border: 1px solid var(--line); padding: 10px 14px; border-radius: 99px; cursor: pointer; transition: transform .15s ease; }
+button:hover { transform: translateY(-2px); }
+button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+#msg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; font-size: 14px; color: var(--muted); pointer-events: none; }
+#bar { position: absolute; left: 0; top: 0; height: 3px; width: 0; background: var(--fg); transition: width .2s; }
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="c" aria-label="Modello 3D dell'utensile: trascina per ruotare, scorri o pizzica per ingrandire"></canvas>
+<div id="bar"></div>
+<div id="msg">Carico il modello 3D…</div>
+<div class="ui">
+  <span class="hint">Trascina per ruotare · scorri o pizzica per ingrandire · due dita per spostare</span>
+  <span class="btns"><button type="button" id="spin">Rotazione</button><button type="button" id="reset">Inquadra tutto</button></span>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const msg = document.getElementById('msg'), bar = document.getElementById('bar');
+const q = /[?&]theme=(dark|light)/.exec(location.search);
+function theme(t) { document.documentElement.setAttribute('data-theme', t); if (scene) scene.background = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()); }
+let scene;
+const sys = matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+document.documentElement.setAttribute('data-theme', q ? q[1] : sys);
+window.addEventListener('message', e => { if (e.data && e.data.type === 'theme') theme(e.data.value); });
+
+try {
+  const canvas = document.getElementById('c');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  scene = new THREE.Scene();
+  theme(document.documentElement.getAttribute('data-theme'));
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+  const cam = new THREE.PerspectiveCamera(35, 1, 0.001, 50);
+  const ctl = new OrbitControls(cam, canvas);
+  ctl.enableDamping = true; ctl.dampingFactor = 0.08; ctl.autoRotateSpeed = 1.2;
+  const key = new THREE.DirectionalLight(0xffffff, 1.2); key.position.set(1, 2, 1.5); scene.add(key);
+
+  let home = null;
+  function frame() {
+    if (!home) return;
+    cam.position.copy(home.pos); ctl.target.copy(home.target); ctl.update();
+  }
+  function resize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
+  }
+  addEventListener('resize', resize); resize();
+
+  new GLTFLoader().load('utensile.glb', gltf => {
+    scene.add(gltf.scene);
+    const box = new THREE.Box3().setFromObject(gltf.scene);
+    const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+    const r = Math.max(size.x, size.y, size.z) * 0.62;
+    const dist = r / Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
+    home = { target: c.clone(), pos: c.clone().add(new THREE.Vector3(0.55, 0.45, 0.8).normalize().multiplyScalar(dist)) };
+    cam.far = dist * 10; cam.updateProjectionMatrix();
+    ctl.minDistance = dist * 0.01; ctl.maxDistance = dist * 3;
+    frame(); msg.remove(); bar.style.width = '0';
+  }, e => { if (e.total) bar.style.width = (100 * e.loaded / e.total) + '%'; },
+  err => { console.error(err); msg.textContent = 'Non riesco a caricare il modello 3D. Riprova più tardi.'; });
+
+  document.getElementById('reset').onclick = frame;
+  const spin = document.getElementById('spin');
+  spin.onclick = () => { ctl.autoRotate = !ctl.autoRotate; spin.style.opacity = ctl.autoRotate ? 1 : .6; };
+  spin.style.opacity = .6;
+  renderer.setAnimationLoop(() => { ctl.update(); renderer.render(scene, cam); });
+} catch (e) {
+  console.error(e); msg.textContent = 'Il tuo browser non riesce a mostrare il modello 3D.';
+}
+</script>
+</body>
+</html>
