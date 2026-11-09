@@ -3,227 +3,330 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cristian Figura Portfolio</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<title>Cristian Figura · portfolio</title>
+<meta name="description" content="Portfolio di Cristian Figura, graphic designer: branding, editoria, 3D, interfacce, visual design e video.">
+<meta name="theme-color" content="#faf8f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Hanken+Grotesk:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..800,0..100&family=Hanken+Grotesk:wght@400;500;700&display=swap">
+<script>
+/* tema: scelta salvata, altrimenti quella del dispositivo. Eseguito subito per evitare lampi. */
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('theme'); } catch (e) {}
+  if (t !== 'light' && t !== 'dark') t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
 <style>
-/* Layout: dark editorial portfolio. Home = intro, one coloured band per category with a tile per project,
-   then "Chi sono". Each project has its own view (#slug) with a coloured header and a gallery.
-   Content lives in the PROJECTS / CATEGORIES data at the bottom, not in the markup. */
+/* Struttura: barra in alto, hero con nome e collage, sei sezioni numerate (testo a sinistra, progetti a destra),
+   profilo, contatti. Ogni progetto ha la sua pagina (#slug). Chiaro e scuro con le stesse gerarchie. */
 :root {
-  --bg: #1e1e1e;
-  --bg-2: #28282b;
-  --fg: #ebebeb;
-  --muted: #a6a6ab;
-  --line: #3a3a3e;
-  --light-ink: #f1f1f1;
-  --dark-ink: #1e1e1e;
-  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --bg: #faf8f4; --surface: #ffffff; --fg: #161616; --muted: #5b5b60; --line: #e2ded4; --hover: #f0ece3;
+  --accent: #1b2a6b; --blob: #1b2a6b; --on-accent: #ffffff;
+  --shadow: 0 10px 28px rgba(22,22,22,.10);
+  --display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --text: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
-  --gl: max(16px, env(safe-area-inset-left, 0px));
-  --gr: max(16px, env(safe-area-inset-right, 0px));
+  --gl: max(20px, env(safe-area-inset-left, 0px)); --gr: max(20px, env(safe-area-inset-right, 0px));
+  --maxw: 1320px;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #141414; --surface: #1e1e20; --fg: #ececec; --muted: #a8a8ae; --line: #333337; --hover: #26262a;
+  --accent: #9fb0ff; --blob: #2a3a8f; --on-accent: #101010;
+  --shadow: 0 12px 30px rgba(0,0,0,.45);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--text); font-size: 1rem; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 40; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; }
-:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
-h1, h2, h3, p { margin: 0; }
-.disp { font-family: var(--display); font-variation-settings: "SOFT" 100; }
+h1, h2, h3, p, figure, dl, dd { margin: 0; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.wrap { max-width: var(--maxw); margin: 0 auto; padding-left: var(--gl); padding-right: var(--gr); }
+.serif { font-family: var(--display); font-variation-settings: "SOFT" 0, "opsz" 72; }
 
-.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 16px; padding: 10px var(--gr) 10px var(--gl); }
-.bar .mark { font-family: var(--display); font-weight: 900; font-size: 1.1rem; font-variation-settings: "SOFT" 100; white-space: nowrap; }
-.bar .back { margin-left: auto; font-size: .8rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; padding: 8px 14px; border: 1px solid var(--line); border-radius: 99px; transition: background .2s, transform .2s; }
-.bar .back:hover { background: var(--bg-2); transform: translateX(-3px); }
-.bar nav { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; min-width: 0; scrollbar-width: none; }
+/* barra */
+.bar { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
+.bar-in { max-width: var(--maxw); margin: 0 auto; display: flex; align-items: center; gap: 18px; padding: 10px var(--gr) 10px var(--gl); }
+.mark { font-weight: 700; font-size: .95rem; white-space: nowrap; }
+.mark span { color: var(--muted); font-weight: 400; }
+.bar nav { display: flex; gap: 2px; margin-left: auto; overflow-x: auto; min-width: 0; scrollbar-width: none; }
 .bar nav::-webkit-scrollbar { display: none; }
-.bar nav button { background: none; border: 0; cursor: pointer; white-space: nowrap; font-size: .78rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; padding: 8px 10px; border-radius: 99px; color: var(--muted); }
-.bar nav button:hover { color: var(--fg); background: var(--bg-2); }
+.bar nav a { position: relative; white-space: nowrap; font-size: .82rem; font-weight: 500; padding: 9px 11px; color: var(--muted); border-radius: 99px; transition: color .2s, background .2s; }
+.bar nav a:hover { color: var(--fg); background: var(--hover); }
+.bar nav a.is-active { color: var(--fg); }
+.bar nav a.is-active::after { content: ""; position: absolute; left: 50%; bottom: 3px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--accent); }
+.back { margin-left: auto; font-size: .82rem; font-weight: 700; letter-spacing: .04em; padding: 9px 16px; border: 1px solid var(--line); border-radius: 99px; transition: background .2s, transform .2s; }
+.back:hover { background: var(--hover); transform: translateX(-3px); }
+.theme { flex: none; width: 44px; height: 44px; display: inline-grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: none; cursor: pointer; transition: background .2s, transform .3s; }
+.theme:hover { background: var(--hover); transform: rotate(18deg); }
+.theme svg { width: 20px; height: 20px; }
+.theme .moon { display: none; }
+:root[data-theme="dark"] .theme .sun { display: none; }
+:root[data-theme="dark"] .theme .moon { display: block; }
 
-.hero { padding: clamp(40px, 8vw, 104px) var(--gr) clamp(32px, 5vw, 64px) var(--gl); }
-.hero h1 { font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(3rem, 12vw, 10.5rem); line-height: .95; letter-spacing: -.02em; text-wrap: balance; }
-.hero .sub { margin: 6px 0 0 6px; font-family: var(--display); font-weight: 300; font-variation-settings: "SOFT" 50; font-size: clamp(1.5rem, 4vw, 3.2rem); }
-.hero .lead { margin-top: clamp(24px, 3.5vw, 44px); max-width: 56ch; font-size: 1.15rem; color: var(--muted); }
-.chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(24px, 3.5vw, 40px); }
-.chip { display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 99px; border: 1px solid var(--line); background: none; cursor: pointer; font-size: .9rem; font-weight: 500; transition: background .2s, transform .2s; }
-.chip i { width: 11px; height: 11px; border-radius: 50%; background: var(--c); flex: none; }
-.chip:hover { background: var(--bg-2); transform: translateY(-2px); }
+/* hero */
+.hero { padding-top: clamp(32px, 6vw, 80px); padding-bottom: clamp(40px, 7vw, 96px); }
+.hero-in { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
+.hero h1 { font-family: var(--display); font-weight: 500; font-variation-settings: "SOFT" 0, "opsz" 144; font-size: clamp(3.1rem, 8.4vw, 7.6rem); line-height: .93; letter-spacing: -.015em; text-transform: uppercase; color: var(--accent); }
+.hero .kind { margin-top: 14px; font-family: var(--display); font-weight: 300; font-size: clamp(1.4rem, 3vw, 2.4rem); letter-spacing: .32em; }
+.hero .lead { margin-top: clamp(20px, 3vw, 34px); max-width: 46ch; color: var(--muted); font-size: 1.08rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px 20px; margin-top: clamp(24px, 3.4vw, 40px); }
+.chips a { position: relative; font-size: .92rem; font-weight: 500; padding: 6px 0; color: var(--muted); transition: color .2s; }
+.chips a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 2px; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
+.chips a:hover { color: var(--fg); }
+.chips a:hover::after { transform: scaleX(1); }
+.scroll { display: inline-flex; align-items: center; gap: 10px; margin-top: clamp(28px, 4vw, 48px); font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.scroll i { width: 26px; height: 26px; border: 1px solid var(--line); border-radius: 50%; display: grid; place-items: center; font-style: normal; animation: bob 2.4s ease-in-out infinite; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 
-.band { background: var(--c); color: var(--ink); }
-.band-in { display: flex; flex-wrap: wrap; gap: 32px 56px; padding: clamp(32px, 5vw, 56px) var(--gr) clamp(32px, 5vw, 56px) var(--gl); }
-.pan { flex: 1 1 280px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
-.pan h2 { font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 72; font-size: clamp(2rem, 3.4vw, 2.75rem); line-height: 1; letter-spacing: -.01em; text-wrap: balance; }
-.pan p { font-family: var(--display); font-weight: 300; font-variation-settings: "SOFT" 50; font-size: clamp(1.15rem, 1.7vw, 1.4rem); line-height: 1.2; }
-.pan .count { margin-top: auto; font-size: .8rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
-.tiles { flex: 999 1 520px; min-width: 0; display: flex; gap: 24px; overflow-x: auto; padding: 10px 4px 14px; }
-.tile { display: flex; flex-direction: column; gap: 14px; width: 240px; flex: none; }
-.shot { position: relative; width: 240px; height: 320px; overflow: hidden; background: var(--bg-2); transition: transform .35s ease, box-shadow .35s ease; }
-.shot img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s ease; }
-a.tile:hover .shot, a.tile:focus-visible .shot { transform: translateY(-8px); box-shadow: 0 22px 34px rgba(0,0,0,.38); }
-a.tile:hover .shot img { transform: scale(1.06); }
-.badge { position: absolute; left: 12px; top: 12px; padding: 6px 10px; border-radius: 99px; background: rgba(20,20,22,.78); color: var(--light-ink); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.cap { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.cap b { font-family: var(--display); font-weight: 700; font-variation-settings: "SOFT" 100; font-size: 1.35rem; line-height: 1.1; }
-.cap .arr { font-size: 1.35rem; transition: transform .25s ease; }
-a.tile:hover .arr { transform: translateX(8px); }
-.tile .sub2 { font-size: .88rem; line-height: 1.35; opacity: .9; margin-top: -8px; }
-.ph { width: 240px; height: 320px; border: 2px dashed currentColor; opacity: .7; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.collage { position: relative; isolation: isolate; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 4% 0; }
+.collage::before { content: ""; position: absolute; z-index: -1; inset: 2% -6% 4% 14%; background: var(--blob); border-radius: 58% 42% 52% 48% / 46% 56% 44% 54%; opacity: .92; }
+.collage .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.collage .col:nth-child(2) { margin-top: 12%; }
+.collage a { display: block; overflow: hidden; border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); transition: transform .4s ease, box-shadow .4s ease; }
+.collage a:hover { transform: translateY(-6px) rotate(-.6deg); }
+.collage img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 
-.about { padding: clamp(48px, 8vw, 112px) var(--gr) clamp(48px, 8vw, 112px) var(--gl); display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(32px, 5vw, 56px); }
-.about h2 { font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(2.4rem, 7vw, 5.5rem); line-height: 1; letter-spacing: -.02em; }
-.cols { display: flex; flex-wrap: wrap; gap: 40px 64px; }
-.cols > div { flex: 1 1 320px; min-width: 0; }
-.cols h3 { font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
-.cols p { max-width: 58ch; }
-.cols p + p { margin-top: 14px; }
-.soft { display: flex; flex-wrap: wrap; gap: 8px; }
-.soft span { padding: 8px 14px; border: 1px solid var(--line); border-radius: 8px; font-weight: 500; font-size: .92rem; }
-.tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.tl li { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); }
-.tl .y { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; }
-.tl b { font-family: var(--display); font-weight: 700; font-variation-settings: "SOFT" 100; font-size: 1.2rem; display: block; line-height: 1.2; }
-.tl span { color: var(--muted); font-size: .92rem; }
-.contact { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
-.contact .mail { font-family: var(--display); font-weight: 700; font-size: clamp(1.2rem, 3vw, 1.8rem); overflow-wrap: anywhere; }
-.btn { border: 1px solid var(--fg); background: none; padding: 10px 18px; border-radius: 99px; font-size: .82rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; transition: background .2s, color .2s; }
-.btn:hover { background: var(--fg); color: var(--bg); }
-.foot { padding: clamp(48px, 9vw, 128px) var(--gr) clamp(40px, 6vw, 80px) var(--gl); border-top: 1px solid var(--line); }
-.foot h2 { font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(3rem, 11vw, 10rem); line-height: 1; letter-spacing: -.02em; }
-.foot small { display: block; margin-top: 24px; color: var(--muted); font-size: .85rem; }
+/* sezioni */
+.sec { border-top: 1px solid var(--line); padding: clamp(40px, 6vw, 88px) 0; }
+.sec-in { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
+.sec-head { position: sticky; top: 92px; align-self: start; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.sec-head .num { font-size: .82rem; font-weight: 700; letter-spacing: .12em; color: var(--muted); }
+.sec-head h2 { font-family: var(--display); font-weight: 500; font-variation-settings: "SOFT" 0, "opsz" 96; font-size: clamp(2rem, 3.4vw, 3rem); line-height: 1.04; letter-spacing: -.01em; color: var(--c); text-wrap: balance; }
+.sec-head p { color: var(--muted); font-size: .98rem; max-width: 30ch; }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 20px; border: 1.5px solid var(--c); border-radius: 3px; background: var(--c); color: var(--on-c); font-size: .74rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease, background .2s, color .2s; }
+.btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px color-mix(in srgb, var(--c) 30%, transparent); }
+.btn:active { transform: translateY(0); box-shadow: none; }
+.btn.ghost { background: none; color: var(--c); }
+.btn.ghost:hover { background: var(--c); color: var(--on-c); }
+.btn .arr { transition: transform .25s ease; }
+.btn:hover .arr { transform: translateX(5px); }
+.sec[data-s="branding"] { --c: #1b2a6b; --on-c: #fff; }
+.sec[data-s="editoria"] { --c: #b45500; --on-c: #fff; }
+.sec[data-s="3d"] { --c: #08704d; --on-c: #fff; }
+.sec[data-s="digital"] { --c: #a31128; --on-c: #fff; }
+.sec[data-s="visual"] { --c: #740677; --on-c: #fff; }
+.sec[data-s="video"] { --c: #a8166f; --on-c: #fff; }
+:root[data-theme="dark"] .sec[data-s="branding"] { --c: #9fb0ff; --on-c: #10142e; }
+:root[data-theme="dark"] .sec[data-s="editoria"] { --c: #ff9a3d; --on-c: #241200; }
+:root[data-theme="dark"] .sec[data-s="3d"] { --c: #4fcf9b; --on-c: #06251a; }
+:root[data-theme="dark"] .sec[data-s="digital"] { --c: #ff7186; --on-c: #2b0610; }
+:root[data-theme="dark"] .sec[data-s="visual"] { --c: #e08ee6; --on-c: #2a0a2c; }
+:root[data-theme="dark"] .sec[data-s="video"] { --c: #ff7cc4; --on-c: #2d0720; }
 
-/* project view */
-.phead { background: var(--c); color: var(--ink); padding: clamp(32px, 6vw, 80px) var(--gr) clamp(32px, 5vw, 64px) var(--gl); }
-.phead .cat { font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
-.phead h1 { margin-top: 14px; font-family: var(--display); font-weight: 900; font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(2.6rem, 9vw, 7rem); line-height: .98; letter-spacing: -.02em; text-wrap: balance; }
-.phead p { margin-top: clamp(20px, 3vw, 36px); max-width: 60ch; font-family: var(--display); font-weight: 300; font-variation-settings: "SOFT" 50; font-size: clamp(1.2rem, 2.2vw, 1.7rem); line-height: 1.3; }
-.facts { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: 28px; font-size: .9rem; }
-.facts dt { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .75; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: clamp(18px, 2.4vw, 32px); }
+.card { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.card .lbl { display: flex; align-items: baseline; gap: 10px; font-size: .86rem; font-weight: 700; }
+.card .lbl small { color: var(--muted); font-size: .76rem; font-weight: 700; letter-spacing: .08em; }
+.card .lbl em { margin-left: auto; font-style: normal; color: var(--muted); font-weight: 500; font-size: .76rem; }
+.card .shot { position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 2px 0 rgba(0,0,0,.02); transition: transform .35s ease, box-shadow .35s ease, border-color .35s; }
+.card .shot img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform .8s ease; }
+a.card:hover .shot, a.card:focus-visible .shot { transform: translateY(-6px); box-shadow: var(--shadow); border-color: var(--c); }
+a.card:hover .shot img { transform: scale(1.05); }
+.card .badge { position: absolute; left: 12px; top: 12px; padding: 6px 10px; border-radius: 99px; background: rgba(15,15,17,.82); color: #f4f4f4; font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.card .badge.live { background: var(--c); color: var(--on-c); }
+.card p { color: var(--muted); font-size: .9rem; line-height: 1.4; }
+.card.soon .shot { display: grid; place-items: center; aspect-ratio: 4 / 3; border-style: dashed; background: none; color: var(--muted); font-size: .76rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+
+/* profilo */
+.profile { border-top: 1px solid var(--line); padding: clamp(40px, 6vw, 88px) 0; }
+.profile h2, .contact h2 { font-family: var(--display); font-weight: 500; font-variation-settings: "SOFT" 0, "opsz" 144; line-height: 1; letter-spacing: -.01em; }
+.profile .sec-head h2 { color: var(--fg); }
+.pgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(28px, 4vw, 56px) clamp(24px, 3vw, 48px); }
+.pgrid h3 { font-size: .74rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.pgrid .wide { grid-column: span 2; }
+.pgrid p { max-width: 60ch; }
+.pgrid p + p { margin-top: 12px; }
+.role { font-family: var(--display); font-weight: 500; font-size: clamp(1.5rem, 2.6vw, 2.1rem); line-height: 1.1; margin-bottom: 14px; }
+.tl { list-style: none; margin: 0; padding: 0; }
+.tl li { padding: 14px 0; border-top: 1px solid var(--line); }
+.tl li:first-child { padding-top: 0; border-top: 0; }
+.tl .y { display: block; font-size: .78rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tl b { display: block; font-family: var(--display); font-weight: 600; font-size: 1.08rem; line-height: 1.25; }
+.tl span.d { color: var(--muted); font-size: .9rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tags span { padding: 7px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: .88rem; font-weight: 500; background: var(--surface); }
+.contact { border-top: 1px solid var(--line); padding: clamp(48px, 8vw, 112px) 0 clamp(40px, 6vw, 72px); }
+.contact h2 { font-size: clamp(2.6rem, 7.6vw, 6.4rem); max-width: 14ch; }
+.contact .row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; margin-top: clamp(24px, 4vw, 44px); }
+.contact .mail { font-family: var(--display); font-weight: 500; font-size: clamp(1.3rem, 3vw, 2rem); overflow-wrap: anywhere; color: var(--accent); border-bottom: 2px solid currentColor; }
+.contact .btn { --c: var(--fg); --on-c: var(--bg); }
+.foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-top: 28px; margin-top: clamp(40px, 6vw, 80px); border-top: 1px solid var(--line); color: var(--muted); font-size: .84rem; }
+
+/* pagina progetto */
+.phead { background: var(--c); color: var(--ink); padding: clamp(32px, 6vw, 80px) 0 clamp(32px, 5vw, 64px); }
+.phead .cat { font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+.phead h1 { margin-top: 14px; font-family: var(--display); font-weight: 500; font-variation-settings: "SOFT" 0, "opsz" 144; font-size: clamp(2.6rem, 8.5vw, 6.6rem); line-height: .98; letter-spacing: -.015em; text-wrap: balance; }
+.phead p { margin-top: clamp(18px, 3vw, 32px); max-width: 62ch; font-size: clamp(1.05rem, 1.8vw, 1.3rem); line-height: 1.5; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: 26px; font-size: .9rem; }
+.facts dt { font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .78; }
 .facts dd { margin: 2px 0 0; font-weight: 500; }
-.facts div { min-width: 0; }
-.gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(16px, 2.5vw, 32px); padding: clamp(24px, 4vw, 56px) var(--gr) clamp(24px, 4vw, 56px) var(--gl); }
-.gallery button { display: block; width: 100%; padding: 0; border: 0; background: var(--bg-2); cursor: zoom-in; }
+.cta { display: inline-flex; align-items: center; gap: 12px; margin-top: 30px; padding: 15px 24px; border-radius: 3px; background: var(--ink); color: var(--c); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; transition: transform .2s ease, box-shadow .2s ease; }
+.cta:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,.28); }
+.cta .arr { transition: transform .25s; }
+.cta:hover .arr { transform: translateX(5px); }
+.try { padding-top: clamp(28px, 5vw, 64px); }
+.try-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin-bottom: 20px; }
+.try-head h2 { font-family: var(--display); font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.1; }
+.try-head p { color: var(--muted); max-width: 52ch; margin-top: 6px; }
+.try-head a { font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 11px 16px; border: 1px solid var(--line); border-radius: 99px; transition: background .2s; }
+.try-head a:hover { background: var(--hover); }
+.frame { margin: 0 auto; border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+.frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+.frame--phone { width: min(100%, 400px); height: min(820px, calc(100svh - 96px)); min-height: 560px; border-radius: 22px; }
+.frame--site { width: 100%; height: min(78vh, 780px); min-height: 520px; border-radius: 10px; }
+.gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(16px, 2.5vw, 32px); padding: clamp(28px, 4vw, 56px) 0; }
+.gallery button { display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); cursor: zoom-in; }
 .gallery img { display: block; width: 100%; height: auto; }
-.next { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding: 0 var(--gr) clamp(48px, 8vw, 96px) var(--gl); }
-.next a { flex: 1 1 260px; display: flex; flex-direction: column; gap: 6px; padding: 20px; border: 1px solid var(--line); border-radius: 4px; transition: background .2s, transform .2s; }
-.next a:hover { background: var(--bg-2); transform: translateY(-3px); }
-.next small { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.next b { font-family: var(--display); font-weight: 700; font-variation-settings: "SOFT" 100; font-size: 1.5rem; line-height: 1.1; }
+.next { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-bottom: clamp(48px, 8vw, 96px); }
+.next a { flex: 1 1 260px; display: flex; flex-direction: column; gap: 6px; padding: 20px; border: 1px solid var(--line); border-radius: 6px; transition: background .2s, transform .2s; }
+.next a:hover { background: var(--hover); transform: translateY(-3px); }
+.next small { font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.next b { font-family: var(--display); font-weight: 600; font-size: 1.5rem; line-height: 1.1; }
 .next .r { text-align: right; }
 
-.lb { position: fixed; inset: 0; z-index: 50; background: rgba(15,15,17,.95); display: none; align-items: center; justify-content: center; padding: max(16px, env(safe-area-inset-top, 0px)) var(--gr) max(16px, env(safe-area-inset-bottom, 0px)) var(--gl); }
+.lb { position: fixed; inset: 0; z-index: 50; background: rgba(12,12,14,.95); display: none; align-items: center; justify-content: center; padding: max(16px, env(safe-area-inset-top, 0px)) var(--gr) max(16px, env(safe-area-inset-bottom, 0px)) var(--gl); }
 .lb[data-open="true"] { display: flex; }
 .lb img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
-.lb button { position: absolute; top: max(12px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); background: #ebebeb; color: #1e1e1e; border: 0; border-radius: 99px; font: 700 .8rem var(--text); letter-spacing: .06em; text-transform: uppercase; padding: 10px 16px; cursor: pointer; }
+.lb button { position: absolute; top: max(12px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); background: #ececec; color: #161616; border: 0; border-radius: 99px; font: 700 .8rem var(--text); letter-spacing: .06em; text-transform: uppercase; padding: 10px 16px; cursor: pointer; }
 
-@media (max-width: 640px) {
-  .tl li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
-  .bar nav button { padding: 8px; }
+@media (max-width: 980px) {
+  .hero-in { grid-template-columns: minmax(0, 1fr); }
+  .collage { max-width: 640px; }
+  .sec-in { grid-template-columns: minmax(0, 1fr); }
+  .sec-head { position: static; }
+  .pgrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .pgrid .wide { grid-column: 1 / -1; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } html { scroll-behavior: auto; } }
+@media (max-width: 600px) {
+  .pgrid { grid-template-columns: minmax(0, 1fr); }
+  .mark span { display: none; }
+  .bar-in { gap: 8px; }
+  .collage { gap: 10px; }
+  .collage .col { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } html { scroll-behavior: auto; } }
 </style>
-
+</head>
+<body>
 <div id="app"></div>
+<noscript><p style="padding:24px">Per vedere il portfolio serve JavaScript.</p></noscript>
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Immagine ingrandita">
   <img id="lbimg" alt="">
   <button type="button" id="lbclose">Chiudi</button>
 </div>
 
 <script>
-/* ---------- CONTENUTI: qui si aggiungono e si cambiano i progetti ---------- */
+/* ===================== CONTENUTI: qui si aggiungono e si cambiano i progetti ===================== */
 var EMAIL = 'crys.figura@gmail.com';
 
-var CATEGORIES = [
-  { id: 'city',        name: 'Branding',      line: 'Identità visive e materiali istituzionali', color: '#1e2144', ink: 'light', dot: '#4b57c4' },
-  { id: 'editoria',    name: 'Editoria',      line: 'Libri e progettazione tipografica',        color: '#d46901', ink: 'dark',  dot: '#d46901' },
-  { id: 'modeling',    name: '3D modeling',   line: 'Arredamento e prodotto',                   color: '#08704d', ink: 'light', dot: '#08704d' },
-  { id: 'mockup',      name: 'Mockup',        line: 'Interfacce e app',                         color: '#a31128', ink: 'light', dot: '#a31128' },
-  { id: 'social',      name: 'Social',        line: 'Post per diversi clienti',                 color: '#740677', ink: 'light', dot: '#740677' },
-  { id: 'fotoritocco', name: 'Fotoritocco',   line: 'Prima e dopo',                             color: '#0b7480', ink: 'light', dot: '#0b7480' },
-  { id: 'copertine',   name: 'Copertine',     line: 'Artwork per CD',                           color: '#c5a423', ink: 'dark',  dot: '#c5a423' },
-  { id: 'video',       name: 'Video editing', line: 'Performance jazz e reel di prodotto',      color: '#ab1775', ink: 'light', dot: '#ab1775' }
+/* Le sei sezioni della home, nell'ordine in cui compaiono. */
+var SECTIONS = [
+  { id: 'branding', n: '01', nav: 'Branding', name: 'Branding e identità visiva', line: 'Sistemi visivi coordinati, dal concept alle applicazioni fisiche e digitali.', cta: 'Scopri i progetti' },
+  { id: 'editoria', n: '02', nav: 'Editoria', name: 'Editoria', line: 'Libri che uniscono contenuto, forma e tipografia per raccontare storie e idee.', cta: 'Vedi i progetti' },
+  { id: '3d', n: '03', nav: '3D', name: '3D Design', line: 'Dalla modellazione alla renderizzazione: arredamento e prodotto.', cta: 'Scopri di più' },
+  { id: 'digital', n: '04', nav: 'Digital', name: 'Digital', line: 'Interfacce digitali intuitive e orientate all’esperienza.', cta: 'Vedi il progetto' },
+  { id: 'visual', n: '05', nav: 'Visual', name: 'Visual Design', line: 'Comunicazione visiva per il digitale, la stampa e l’arte visiva.', cta: 'Scopri di più' },
+  { id: 'video', n: '06', nav: 'Video', name: 'Video Editing', line: 'Ripresa e montaggio di performance dal vivo e di contenuti per prodotto.', cta: 'Guarda i lavori' }
 ];
+/* Colori delle pagine progetto (quelli del PDF). ink = colore del testo sopra la fascia. */
+var BANDS = {
+  branding: { c: '#1e2144', ink: '#f1f1f1' }, editoria: { c: '#d46901', ink: '#1e1e1e' },
+  '3d': { c: '#08704d', ink: '#f1f1f1' }, digital: { c: '#a31128', ink: '#f1f1f1' },
+  social: { c: '#740677', ink: '#f1f1f1' }, fotoritocco: { c: '#0b7480', ink: '#f1f1f1' },
+  copertine: { c: '#c5a423', ink: '#1e1e1e' }, video: { c: '#ab1775', ink: '#f1f1f1' }
+};
 
-/* facts: righe opzionali (Ruolo, Strumenti, Anno...) che compaiono nella pagina solo se compilate */
+/* sec = sezione della home; band = colore della pagina; sub = sottotitolo di gruppo (Visual Design);
+   cover = immagine della scheda in home; badge = etichetta sull'immagine;
+   open = { href, label } apre l'applicativo o il sito; embed = { src, kind: 'phone' | 'site', title, text } lo incorpora nella pagina.
+   facts: righe opzionali (Ruolo, Strumenti, Anno...) mostrate solo se compilate. */
 var PROJECTS = [
-  { slug: 'brindisi', cat: 'city', title: 'Brindisi', tile: 'img/t-brindisi.jpg', tag: '',
-    sub: 'Logo, palette, icone e materiali',
-    text: 'Identità visiva per la città di Brindisi: un logo costruito sulle lettere BRNDSI, una palette di tre colori e un set di icone per luoghi e servizi. Il sistema è applicato a mappa dei quartieri, brochure, schede dei monumenti e carta intestata.',
+  { slug: 'eurochocolate', sec: 'branding', band: 'branding', title: 'Rebranding Eurochocolate', cover: 'img/euro-packaging.webp', badge: 'Sito interattivo', badgeLive: true,
+    sub: 'Identità visiva · web design · packaging',
+    text: 'Rebranding di Eurochocolate per l’edizione 2026 a Perugia, costruito sul claim «Changing shape, not flavor». Il simbolo è una forma a fava con una C al centro: cambia aspetto e diventa volume nei poster, pattern nei packaging e decorazione nei materiali stampati. Il progetto comprende tre poster in colori diversi, il packaging di tavolette, Euro Cookies, Euro Praline e dell’assortimento d’autore, il programma, la guida alle esperienze, il listino prodotti e il sito web, che puoi provare qui sotto.',
     facts: [],
-    images: [['img/city-identity.jpg', 'Logo BRNDSI, palette in due blu e bianco, concept geometrico e 20 icone per luoghi e servizi della città'],
-             ['img/city-materials.jpg', 'Materiali del city branding: mappa dei quartieri, brochure con cubi illustrati, schede dei monumenti e carta intestata']] },
-  { slug: 'passi', cat: 'city', title: 'Passi', tile: 'img/t-passi.jpg', tag: '',
-    sub: 'Brand della mostra di Pirri e applicativo interattivo',
-    text: 'Brand e applicativo interattivo per la mostra di Pirri. Il logo è costruito a moduli quadrati, come un pixel. Nel programma il visitatore inserisce il proprio nome e carica le coordinate del suo percorso. Il percorso diventa un pattern a moduli che compare un passo alla volta, accompagnato da un click sonoro. Il pattern si applica poi a una maglietta e a una cartolina e si salva come immagine. L’area del pattern è proporzionata all’installazione: 266 × 720 pixel. Lo stesso pattern è applicato anche a una tote bag.',
-    facts: [['Strumenti', 'Processing']],
+    open: { href: 'eurochocolate/', label: 'Apri il sito' },
+    embed: { src: 'eurochocolate/', kind: 'site', title: 'Il sito del concept', text: 'Naviga il sito come un visitatore: menu, programma, prodotti, moduli. È un concept di rebranding, non il sito ufficiale di Eurochocolate.' },
+    images: [['img/euro-poster.webp', 'Tre poster di Eurochocolate 2026, rosso, arancio e marrone scuro, con la grande C e il claim Changing shape, not flavor'],
+             ['img/euro-packaging.webp', 'Packaging: tre tavolette Choco Bar, scatole Euro Cookies ed Euro Praline chiuse e aperte, con il pattern a fave all’interno del coperchio'],
+             ['img/euro-assortimento.webp', 'Confezione Assortimento d’autore, chiusa e aperta, con praline, mini tavolette e biscotti'],
+             ['img/euro-stampati.webp', 'Materiali stampati: programma completo, esperienze e prodotti ufficiali con il listino']] },
+  { slug: 'passi', sec: 'branding', band: 'branding', title: 'Passi', cover: 'img/passi-maglietta.webp', badge: 'Applicativo', badgeLive: true,
+    sub: 'Identità visiva · exhibition design · creative coding',
+    text: 'Brand e applicativo interattivo per la mostra di Pirri. Il logo è costruito a moduli quadrati, come un pixel. Nel programma il visitatore inserisce il proprio nome e carica o disegna il suo percorso. Il percorso diventa un pattern a moduli che compare un passo alla volta, accompagnato da un click sonoro. Il pattern si applica poi a una maglietta e a una cartolina e si salva come immagine. L’area del pattern è proporzionata all’installazione: 266 × 720 pixel. Lo stesso pattern è applicato anche a una tote bag.',
+    facts: [['Strumenti', 'Processing, JavaScript']],
+    open: { href: 'passi/', label: 'Apri l’applicativo' },
+    embed: { src: 'passi/', kind: 'phone', title: 'Prova l’applicativo', text: 'Inserisci il tuo nome, usa il percorso d’esempio o disegnane uno, e guarda comporsi il tuo pattern. Con l’audio attivo senti il click di ogni passo.' },
     images: [['img/passi-logo.webp', 'Logo Passi: moduli quadrati neri e scritta PASSI distanziata'],
              ['img/passi-maglietta.webp', 'Maglietta bianca: logo sul fronte e pattern del percorso sul retro'],
              ['img/passi-tote.webp', 'Tote bag bianca con una fascia del pattern Passi in beige sul fronte'],
              ['img/passi-cartolina.webp', 'Cartolina Passi con la scritta «Grazie per aver percorso questi spazi con il tuo passo. Ogni attraversamento aggiunge un nuovo ritmo all’opera»'],
              ['img/passi-pattern.webp', 'Pattern generato dal percorso, in verticale e in orizzontale, su fondo chiaro e scuro']] },
-  { slug: 'eurochocolate', cat: 'city', title: 'Eurochocolate', tile: 'img/t-eurochocolate.jpg', tag: '',
-    sub: 'Rebranding dell’edizione 2026',
-    text: 'Rebranding di Eurochocolate per l’edizione 2026 a Perugia, costruito sul claim «Changing shape, not flavor». Il simbolo è una forma a fava con una C al centro: cambia aspetto e diventa volume nei poster, pattern nei packaging e decorazione nei materiali stampati. Il progetto comprende tre poster in colori diversi, il packaging di tavolette, Euro Cookies, Euro Praline e dell’assortimento d’autore, il programma, la guida alle esperienze e il listino prodotti, e un sito web.',
+  { slug: 'brindisi', sec: 'branding', band: 'branding', title: 'City Branding di Brindisi', cover: 'img/city-identity.jpg', badge: '',
+    sub: 'Logo, palette, icone e materiali',
+    text: 'Identità visiva per la città di Brindisi: un logo costruito sulle lettere BRNDSI, una palette di tre colori e un set di icone per luoghi e servizi. Il sistema è applicato a mappa dei quartieri, brochure, schede dei monumenti e carta intestata.',
     facts: [],
-    images: [['img/euro-poster.webp', 'Tre poster di Eurochocolate 2026, rosso, arancio e marrone scuro, con la grande C e il claim Changing shape, not flavor'],
-             ['img/euro-packaging.webp', 'Packaging: tre tavolette Choco Bar, scatole Euro Cookies ed Euro Praline chiuse e aperte, con il pattern a fave all’interno del coperchio'],
-             ['img/euro-assortimento.webp', 'Confezione Assortimento d’autore, chiusa e aperta, con praline, mini tavolette e biscotti'],
-             ['img/euro-stampati.webp', 'Materiali stampati: programma completo, esperienze e prodotti ufficiali con il listino']] },
-  { slug: 'vignelli', cat: 'editoria', title: 'Massimo Vignelli', tile: 'img/t-vignelli.jpg', tag: 'Sfoglia',
+    images: [['img/city-identity.jpg', 'Logo BRNDSI, palette in due blu e bianco, concept geometrico e 20 icone per luoghi e servizi della città'],
+             ['img/city-materials.jpg', 'Materiali del city branding: mappa dei quartieri, brochure con cubi illustrati, schede dei monumenti e carta intestata']] },
+  { slug: 'vignelli', sec: 'editoria', band: 'editoria', title: 'Massimo Vignelli', cover: 'img/editoria-vignelli.jpg', badge: '',
     sub: 'Libro sul design e la tipografia',
     text: 'Libro su Massimo Vignelli e sulla progettazione tipografica. Comprende un carattere, con i suoi glifi e i mockup di cappellino e felpa, e le pagine interne dedicate al designer.',
     facts: [],
     images: [['img/editoria-vignelli.jpg', 'Libro «noname albumxalbumx»: copertina tipografica, mockup di cappellino e felpa, specimen del carattere e pagine su Massimo Vignelli']] },
-  { slug: 'edelmann', cat: 'editoria', title: 'Heinz Edelmann', tile: 'img/t-edelmann.jpg', tag: 'Sfoglia',
+  { slug: 'edelmann', sec: 'editoria', band: 'editoria', title: 'Heinz Edelmann', cover: 'img/editoria-edelmann.jpg', badge: '',
     sub: 'Libro sull’illustratore di Yellow Submarine',
     text: 'Libro su Heinz Edelmann, illustratore e graphic designer. La copertina unisce il ritratto alle sue immagini; all’interno ci sono le pagine sulla copertina di Graphis e sul film Yellow Submarine.',
     facts: [],
     images: [['img/editoria-edelmann.jpg', 'Libro su Heinz Edelmann: copertina con ritratto e illustrazioni, pagine su Graphis 113 e su Yellow Submarine']] },
-  { slug: 'studio-modulare', cat: 'modeling', title: 'Studio modulare', tile: 'img/t-studio.jpg', tag: 'Ruota in 3D',
+  { slug: 'studio-modulare', sec: '3d', band: '3d', title: 'Studio modulare', cover: 'img/3d-studio.jpg', badge: '',
     sub: 'Stanza costruita su elementi modulari',
     text: 'Progettazione di uno studio basato su elementi modulari: tubi e giunti, mensole, pannelli, sedute, lampade e un cavalletto. Gli elementi sono modellati in Rhino e combinati nella stanza.',
     facts: [['Strumenti', 'Rhino']],
     images: [['img/3d-studio.jpg', 'Render di uno studio con parete di mattoni, struttura di tubi, mensole, casse audio, scrivania e altalena sospesa, con i moduli singoli a sinistra']] },
-  { slug: 'utensile', cat: 'modeling', title: 'Utensile da cucina', tile: 'img/t-utensile.jpg', tag: 'Ruota in 3D',
+  { slug: 'utensile', sec: '3d', band: '3d', title: 'Utensile da cucina', cover: 'img/3d-utensile.jpg', badge: '',
     sub: 'Rullo con lame, due versioni',
     text: 'Progettazione di un utensile da cucina a rullo con lame circolari e impugnatura, in due versioni, accompagnata da schizzi che mostrano come si usa.',
     facts: [['Strumenti', 'Rhino']],
     images: [['img/3d-utensile.jpg', 'Due versioni di un utensile da cucina a rullo con lame circolari e schizzi d’uso']] },
-  { slug: 'peeps', cat: 'mockup', title: 'Peeps', tile: 'img/t-peeps.jpg', tag: '',
+  { slug: 'peeps', sec: 'digital', band: 'digital', title: 'Peeps', cover: 'img/mockup-peeps.jpg', badge: '',
     sub: 'App per creativi, dall’idea ai mockup',
     text: 'Ideazione di un’app per creativi e realizzazione dei mockup. Gli annunci mostrano avanzamento e pagamenti; il profilo raccoglie skills, attrezzatura e gusti personali.',
     facts: [],
     images: [['img/mockup-peeps.jpg', 'Schermate dell’app Peeps: elenco di annunci e profilo utente']] },
-  { slug: 'social', cat: 'social', title: 'Post per i clienti', tile: 'img/t-social.jpg', tag: '',
+  { slug: 'social', sec: 'visual', band: 'social', group: 'Social design', title: 'Post per i clienti', cover: 'img/social.jpg', badge: '',
     sub: 'Prodotti, ricorrenze e contenuti informativi',
     text: 'Produzione di post per i social di diversi clienti: presentazione di prodotti, auguri per le ricorrenze e contenuti informativi.',
     facts: [],
     images: [['img/social.jpg', 'Griglia di post per clienti diversi: prodotti, auguri di Ferragosto, grafiche informative']] },
-  { slug: 'fotoritocco', cat: 'fotoritocco', title: 'Ritratto', tile: 'img/t-fotoritocco.jpg', tag: 'Prima / dopo',
+  { slug: 'fotoritocco', sec: 'visual', band: 'fotoritocco', group: 'Fotoritocco', title: 'Ritratto', cover: 'img/fotoritocco.jpg', badge: 'Prima / dopo',
     sub: 'Correzione di colore e sfondo',
     text: 'Ritocco di un ritratto: colore della camicia, della pelle e dello sfondo corretti rispetto alla foto di partenza.',
     facts: [],
     images: [['img/fotoritocco.jpg', 'Ritratto prima e dopo il fotoritocco']] },
-  { slug: 'copertine-cd', cat: 'copertine', title: 'Artwork CD', tile: 'img/t-copertine.jpg', tag: '',
+  { slug: 'copertine-cd', sec: 'visual', band: 'copertine', group: 'Copertine e artwork', title: 'Artwork CD', cover: 'img/copertine.jpg', badge: '',
     sub: 'Due copertine e dischi',
     text: 'Artwork per CD: due copertine con i relativi dischi, una con collage fotografico e fiori in bianco e nero, una in stile pop art.',
     facts: [],
     images: [['img/copertine.jpg', 'Due artwork per CD con i relativi dischi']] },
-  { slug: 'jazz-e-reel', cat: 'video', title: 'Fulvio Tomaino’s Ensemble', tile: 'img/t-video.jpg', tag: 'Video',
+  { slug: 'jazz-e-reel', sec: 'video', band: 'video', title: 'Fulvio Tomaino’s Ensemble', cover: 'img/video.jpg', badge: 'Video',
     sub: 'Ripresa e montaggio, più reel per prodotto',
     text: 'Ripresa e montaggio di una performance jazz del Fulvio Tomaino’s Ensemble, e un reel verticale per un prodotto.',
     facts: [],
     images: [['img/video.jpg', 'Fotogramma della performance jazz e reel verticale su smartphone']] }
 ];
 
-/* progetti in arrivo: compaiono come segnaposto in home finché non hanno materiale */
+/* Progetti in arrivo: compaiono come segnaposto finché non hanno materiale. */
 var COMING = [
-  { cat: 'editoria', title: 'Sfoghi e memorie', sub: 'Copertina del libro sull’adolescenza' }
+  { sec: 'editoria', title: 'Sfoghi e memorie', sub: 'Copertina del libro sull’adolescenza' }
 ];
+
+/* Immagini del collage in alto (slug dei progetti, due per colonna). */
+var HERO = [['passi', 'eurochocolate'], ['brindisi', 'peeps']];
 
 var ABOUT = {
   role: 'Graphic designer junior',
@@ -232,91 +335,149 @@ var ABOUT = {
     'Progetto contenuti fisici e digitali: identità visive, mockup, contenuti per i social, ripresa e montaggio video, materiali editoriali e packaging. Seguo ogni lavoro dal concept alla consegna, curando gerarchia visiva, leggibilità ed estetica per il canale e il target.',
     'Ho lavorato in team di marketing, comunicazione e design. Il mio percorso tocca anche marketing, sociologia, informatica e musica, e mi porta curiosità e attenzione alle persone con cui lavoro.'
   ],
+  skills: ['Branding', 'Editorial design', '3D modeling', 'UI design', 'Social design', 'Fotoritocco', 'Video editing', 'Packaging'],
   software: ['Photoshop', 'Illustrator', 'InDesign', 'DaVinci Resolve', 'After Effects', 'Premiere', 'Figma', 'AutoCAD', 'Rhino'],
   languages: [['Italiano', 'madrelingua'], ['Inglese', 'certificazione B2']],
-  timeline: [
+  study: [
     ['2025 – oggi', 'Sapienza Università di Roma', 'Laurea magistrale in Design, Comunicazione Visiva e Multimediale'],
+    ['2020 – 2024', 'Politecnico di Bari', 'Laurea triennale in Disegno Industriale']
+  ],
+  work: [
     ['2025', 'Woom', 'Marketing e comunicazione, graphic design, video editing'],
     ['2023', 'DeVision Communication', 'Tirocinio · Bari'],
-    ['2020 – 2024', 'Politecnico di Bari', 'Laurea triennale in Disegno Industriale'],
     ['2019', 'MYC', 'Tirocinio · Mosta, Malta']
   ]
 };
 
-/* ---------- RENDER ---------- */
+/* ===================== RENDER ===================== */
 var app = document.getElementById('app');
+var view = '';
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-function cat(id) { return CATEGORIES.filter(function (c) { return c.id === id; })[0]; }
-function inkVar(c) { return c.ink === 'dark' ? 'var(--dark-ink)' : 'var(--light-ink)'; }
+function bySlug(s) { return PROJECTS.filter(function (p) { return p.slug === s; })[0]; }
+function sec(id) { return SECTIONS.filter(function (s) { return s.id === id; })[0]; }
+function pad(n) { return (n < 10 ? '0' : '') + n; }
 
-function tile(p) {
-  return '<a class="tile" href="#' + p.slug + '"><div class="shot"><img src="' + p.tile + '" alt="" loading="lazy">' +
-    (p.tag ? '<span class="badge">' + esc(p.tag) + '</span>' : '') + '</div>' +
-    '<div class="cap"><b>' + esc(p.title) + '</b><span class="arr" aria-hidden="true">→</span></div>' +
-    '<div class="sub2">' + esc(p.sub) + '</div></a>';
+var SUN = '<svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+var MOON = '<svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>';
+function themeBtn() { return '<button class="theme" type="button" id="theme" aria-label="Cambia tema, chiaro o scuro">' + SUN + MOON + '</button>'; }
+
+function card(p, i) {
+  var label = '<div class="lbl"><small>' + pad(i + 1) + '</small>' + esc(p.title) + (p.group ? '<em>' + esc(p.group) + '</em>' : '') + '</div>';
+  var badge = p.badge ? '<span class="badge' + (p.badgeLive ? ' live' : '') + '">' + esc(p.badge) + '</span>' : '';
+  return '<a class="card" href="#' + p.slug + '">' + label + '<div class="shot"><img src="' + p.cover + '" alt="" loading="lazy">' + badge + '</div><p>' + esc(p.sub) + '</p></a>';
 }
-function placeholder(p) {
-  return '<div class="tile"><div class="ph">In arrivo</div><div class="cap"><b>' + esc(p.title) + '</b></div><div class="sub2">' + esc(p.sub) + '</div></div>';
+function soon(p) {
+  return '<div class="card soon"><div class="lbl">' + esc(p.title) + '</div><div class="shot">In arrivo</div><p>' + esc(p.sub) + '</p></div>';
 }
-function band(c) {
-  var ps = PROJECTS.filter(function (p) { return p.cat === c.id; });
-  var cs = COMING.filter(function (p) { return p.cat === c.id; });
-  var count = ps.length + (ps.length === 1 ? ' progetto' : ' progetti') + (cs.length ? ' · ' + cs.length + ' in arrivo' : '');
-  return '<section class="band" id="cat-' + c.id + '" style="--c:' + c.color + ';--ink:' + inkVar(c) + '"><div class="band-in">' +
-    '<div class="pan"><h2>' + esc(c.name) + '</h2><p>' + esc(c.line) + '</p><span class="count">' + count + '</span></div>' +
-    '<div class="tiles">' + ps.map(tile).join('') + cs.map(placeholder).join('') + '</div></div></section>';
+function section(s) {
+  var ps = PROJECTS.filter(function (p) { return p.sec === s.id; });
+  var cs = COMING.filter(function (p) { return p.sec === s.id; });
+  return '<section class="sec" id="' + s.id + '" data-s="' + s.id + '"><div class="wrap sec-in">' +
+    '<div class="sec-head"><span class="num">' + s.n + '</span><h2>' + esc(s.name) + '</h2><p>' + esc(s.line) + '</p>' +
+    '<a class="btn" href="#' + ps[0].slug + '">' + esc(s.cta) + ' <span class="arr" aria-hidden="true">→</span></a></div>' +
+    '<div class="cards">' + ps.map(card).join('') + cs.map(soon).join('') + '</div></div></section>';
 }
+function heroCol(col) {
+  return '<div class="col">' + col.map(function (slug) {
+    var p = bySlug(slug);
+    return '<a href="#' + p.slug + '" aria-label="' + esc(p.title) + '"><img src="' + p.cover + '" alt=""></a>';
+  }).join('') + '</div>';
+}
+function tl(rows) {
+  return '<ul class="tl">' + rows.map(function (t) { return '<li><span class="y">' + esc(t[0]) + '</span><b>' + esc(t[1]) + '</b><span class="d">' + esc(t[2]) + '</span></li>'; }).join('') + '</ul>';
+}
+function tags(a) { return '<div class="tags">' + a.map(function (s) { return '<span>' + esc(s) + '</span>'; }).join('') + '</div>'; }
 
 function home() {
   var a = ABOUT;
-  return '<header class="bar"><a class="mark" href="#">C. Figura</a><nav aria-label="Sezioni">' +
-    '<button type="button" data-go="projects">Progetti</button><button type="button" data-go="about">Chi sono</button><button type="button" data-go="contact">Contatti</button></nav></header>' +
-    '<main><section class="hero"><h1>Cristian Figura</h1><div class="sub">portfolio</div>' +
-    '<p class="lead">' + esc(a.role) + ' a ' + esc(a.place) + '. Identità visive, libri, 3D, interfacce, social, fotoritocco, artwork musicali e video.</p>' +
-    '<div class="chips" id="projects">' + CATEGORIES.map(function (c) { return '<button type="button" class="chip" style="--c:' + c.dot + '" data-go="cat-' + c.id + '"><i></i>' + esc(c.name) + '</button>'; }).join('') + '</div></section>' +
-    CATEGORIES.map(band).join('') +
-    '<section class="about" id="about"><h2>Chi sono</h2><div class="cols"><div><h3>Profilo</h3>' + a.intro.map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') +
-    '<h3 style="margin-top:32px">Software</h3><div class="soft">' + a.software.map(function (s) { return '<span>' + esc(s) + '</span>'; }).join('') + '</div>' +
-    '<h3 style="margin-top:32px">Lingue</h3><p>' + a.languages.map(function (l) { return esc(l[0]) + ', ' + esc(l[1]); }).join(' · ') + '</p></div>' +
-    '<div><h3>Esperienze e studi</h3><ul class="tl">' + a.timeline.map(function (t) { return '<li><span class="y">' + esc(t[0]) + '</span><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span></div></li>'; }).join('') + '</ul></div></div>' +
-    '<div id="contact"><div class="cols"><div><h3>Contatti</h3><div class="contact"><span class="mail">' + esc(EMAIL) + '</span><button type="button" class="btn" id="copymail">Copia email</button></div></div></div></div></section></main>' +
-    '<footer class="foot"><h2>a presto!</h2><small>Cristian Figura · portfolio</small></footer>';
+  return '<header class="bar"><div class="bar-in"><a class="mark" href="#">Cristian Figura <span>/ portfolio</span></a>' +
+    '<nav aria-label="Sezioni">' + SECTIONS.map(function (s) { return '<a href="#' + s.id + '" data-nav="' + s.id + '">' + esc(s.nav) + '</a>'; }).join('') +
+    '<a href="#profilo" data-nav="profilo">Profilo</a><a href="#contatti" data-nav="contatti">Contatti</a></nav>' + themeBtn() + '</div></header>' +
+    '<main><section class="hero"><div class="wrap hero-in"><div>' +
+    '<h1>Cristian<br>Figura</h1><div class="kind">portfolio</div>' +
+    '<p class="lead">' + esc(a.role) + ' a ' + esc(a.place) + '. Identità visive, libri, 3D, interfacce, visual design e video: dal concept alla consegna.</p>' +
+    '<nav class="chips" aria-label="Categorie">' + SECTIONS.map(function (s) { return '<a href="#' + s.id + '">' + esc(s.nav) + '</a>'; }).join('') + '</nav>' +
+    '<a class="scroll" href="#branding"><i aria-hidden="true">↓</i>Scorri per esplorare</a></div>' +
+    '<div class="collage">' + HERO.map(heroCol).join('') + '</div></div></section>' +
+    SECTIONS.map(section).join('') +
+    '<section class="profile" id="profilo"><div class="wrap sec-in">' +
+    '<div class="sec-head"><span class="num">07</span><h2 class="serif" style="font-size:clamp(2rem,3.4vw,3rem);line-height:1.04">Profilo</h2><p>Formazione, esperienze e strumenti.</p></div>' +
+    '<div class="pgrid"><div class="wide"><div class="role">' + esc(a.role) + '</div>' + a.intro.map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') + '</div>' +
+    '<div><h3>Lingue</h3><p>' + a.languages.map(function (l) { return esc(l[0]) + ', ' + esc(l[1]); }).join('<br>') + '</p></div>' +
+    '<div><h3>Formazione</h3>' + tl(a.study) + '</div><div><h3>Esperienze</h3>' + tl(a.work) + '</div>' +
+    '<div><h3>Competenze</h3>' + tags(a.skills) + '</div>' +
+    '<div class="wide"><h3>Software</h3>' + tags(a.software) + '</div></div></div></section>' +
+    '<section class="contact" id="contatti"><div class="wrap"><span class="num" style="font-size:.82rem;font-weight:700;letter-spacing:.12em;color:var(--muted)">08</span>' +
+    '<h2 style="margin-top:12px">Parliamo del tuo progetto.</h2>' +
+    '<div class="row"><a class="mail" href="mailto:' + esc(EMAIL) + '">' + esc(EMAIL) + '</a><button type="button" class="btn ghost" id="copymail">Copia email</button></div>' +
+    '<div class="foot"><span>Cristian Figura · ' + esc(a.place) + '</span><span>Portfolio · ' + new Date().getFullYear() + '</span></div></div></section></main>';
 }
 
 function project(p) {
-  var c = cat(p.cat);
+  var s = sec(p.sec), b = BANDS[p.band];
   var i = PROJECTS.indexOf(p);
   var prev = PROJECTS[(i + PROJECTS.length - 1) % PROJECTS.length];
   var next = PROJECTS[(i + 1) % PROJECTS.length];
   var facts = p.facts.length ? '<dl class="facts">' + p.facts.map(function (f) { return '<div><dt>' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd></div>'; }).join('') + '</dl>' : '';
-  return '<header class="bar"><a class="mark" href="#">C. Figura</a><a class="back" href="#">← Tutti i progetti</a></header>' +
-    '<main><section class="phead" style="--c:' + c.color + ';--ink:' + inkVar(c) + '"><div class="cat">' + esc(c.name) + '</div><h1>' + esc(p.title) + '</h1><p>' + esc(p.text) + '</p>' + facts + '</section>' +
-    '<section class="gallery">' + p.images.map(function (im) { return '<button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '"></button>'; }).join('') + '</section>' +
-    '<nav class="next" aria-label="Altri progetti"><a href="#' + prev.slug + '"><small>← Precedente</small><b>' + esc(prev.title) + '</b></a><a class="r" href="#' + next.slug + '"><small>Successivo →</small><b>' + esc(next.title) + '</b></a></nav></main>';
+  var cta = p.open ? '<a class="cta" href="' + p.open.href + '">' + esc(p.open.label) + ' <span class="arr" aria-hidden="true">→</span></a>' : '';
+  var embed = '';
+  if (p.embed) {
+    embed = '<section class="try wrap" aria-labelledby="try-t"><div class="try-head"><div><h2 id="try-t">' + esc(p.embed.title) + '</h2><p>' + esc(p.embed.text) + '</p></div>' +
+      '<a href="' + p.embed.src + '">Apri a schermo intero ↗</a></div>' +
+      '<div class="frame frame--' + p.embed.kind + '"><iframe src="' + p.embed.src + (p.embed.kind === 'phone' ? '?theme=' + document.documentElement.getAttribute('data-theme') : '') + '" title="' + esc(p.embed.title) + '" loading="lazy" allow="autoplay; fullscreen"></iframe></div></section>';
+  }
+  return '<header class="bar"><div class="bar-in"><a class="mark" href="#">Cristian Figura <span>/ portfolio</span></a><a class="back" href="#' + s.id + '">← ' + esc(s.nav) + '</a>' + themeBtn() + '</div></header>' +
+    '<main><section class="phead" style="--c:' + b.c + ';--ink:' + b.ink + '"><div class="wrap"><div class="cat">' + esc(s.name) + (p.group ? ' · ' + esc(p.group) : '') + '</div><h1>' + esc(p.title) + '</h1><p>' + esc(p.text) + '</p>' + facts + '<div>' + cta + '</div></div></section>' +
+    embed +
+    '<section class="gallery wrap">' + p.images.map(function (im) { return '<button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '"></button>'; }).join('') + '</section>' +
+    '<nav class="next wrap" aria-label="Altri progetti"><a href="#' + prev.slug + '"><small>← Precedente</small><b>' + esc(prev.title) + '</b></a><a class="r" href="#' + next.slug + '"><small>Successivo →</small><b>' + esc(next.title) + '</b></a></nav></main>';
 }
 
+function setActive() {
+  var ids = SECTIONS.map(function (s) { return s.id; }).concat(['profilo', 'contatti']);
+  var cur = '';
+  ids.forEach(function (id) { var el = document.getElementById(id); if (el && el.getBoundingClientRect().top <= 140) cur = id; });
+  document.querySelectorAll('[data-nav]').forEach(function (a) { a.classList.toggle('is-active', a.getAttribute('data-nav') === cur); });
+}
+window.addEventListener('scroll', function () { if (view === 'home') setActive(); }, { passive: true });
+
 function route() {
-  var h = location.hash.replace('#', '');
-  var p = PROJECTS.filter(function (x) { return x.slug === h; })[0];
-  app.innerHTML = p ? project(p) : home();
-  document.title = p ? p.title + ' · Cristian Figura' : 'Cristian Figura Portfolio';
-  window.scrollTo(0, 0);
+  var h = '';
+  try { h = decodeURIComponent(location.hash.replace('#', '')); } catch (e) { h = location.hash.replace('#', ''); }
+  var p = bySlug(h);
+  if (p) {
+    app.innerHTML = project(p); view = 'project';
+    document.title = p.title + ' · Cristian Figura';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    return;
+  }
+  var fresh = view !== 'home';
+  if (fresh) { app.innerHTML = home(); view = 'home'; document.title = 'Cristian Figura · portfolio'; }
+  var el = h && document.getElementById(h);
+  if (el) { if (fresh) window.scrollTo({ top: 0, behavior: 'instant' }); el.scrollIntoView({ behavior: fresh ? 'instant' : 'smooth', block: 'start' }); }
+  else if (fresh || !h) window.scrollTo({ top: 0, behavior: fresh ? 'instant' : 'smooth' });
+  setActive();
 }
 window.addEventListener('hashchange', route);
 route();
 
+/* tema e interazioni */
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  try { localStorage.setItem('theme', t); } catch (e) {}
+  syncFrames();
+}
+function syncFrames() {
+  var t = document.documentElement.getAttribute('data-theme');
+  document.querySelectorAll('.frame iframe').forEach(function (f) { try { f.contentWindow.postMessage({ type: 'theme', value: t }, '*'); } catch (e) {} });
+}
 app.addEventListener('click', function (e) {
-  var go = e.target.closest('[data-go]');
-  if (go) {
-    var el = document.getElementById(go.getAttribute('data-go'));
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    return;
-  }
+  if (e.target.closest('#theme')) { setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); return; }
   var z = e.target.closest('[data-zoom]');
   if (z) { openLb(z.getAttribute('data-zoom'), z.getAttribute('data-alt'), z); return; }
-  if (e.target.id === 'copymail') {
-    var b = e.target;
-    function done(t) { b.textContent = t; setTimeout(function () { b.textContent = 'Copia email'; }, 1800); }
+  var m = e.target.closest('#copymail');
+  if (m) {
+    var done = function (t) { m.textContent = t; setTimeout(function () { m.textContent = 'Copia email'; }, 1800); };
     try { navigator.clipboard.writeText(EMAIL).then(function () { done('Copiata'); }, function () { done('Seleziona e copia'); }); }
     catch (err) { done('Seleziona e copia'); }
   }
@@ -330,5 +491,5 @@ lbclose.addEventListener('click', closeLb);
 lb.addEventListener('click', function (e) { if (e.target === lb) closeLb(); });
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lb.getAttribute('data-open')) closeLb(); });
 </script>
-
+</body>
 </html>

@@ -967,7 +967,7 @@ canvas { display: block; width: 426px; height: 749px; border-radius: 6px; user-s
   applyTheme(startTheme);
   palette = startTheme === 'dark' ? 1 : 0;
   window.addEventListener('message', function (e) {
-    if (e.data && e.data.type === 'theme') applyTheme(e.data.value);
+    if (e.data && e.data.type === 'theme') { applyTheme(e.data.value); palette = e.data.value === 'dark' ? 1 : 0; styleInput(); }
   });
 
   /* ================= AVVIO ================= */
