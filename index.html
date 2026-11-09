@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..800,0..100&family=Hanken+Grotesk:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..800,0..100&family=Hanken+Grotesk:wght@400;500;700&family=Montserrat:wght@400;700;900&display=swap">
 <script>
 /* tema: scelta salvata, altrimenti quella del dispositivo. Eseguito subito per evitare lampi. */
 (function () {
@@ -190,6 +190,46 @@ a.card:hover .shot img { transform: scale(1.05); }
 .pgal button:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
 .pgal img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .pgal figcaption { margin-top: 8px; font-size: .84rem; color: var(--muted); }
+/* brief + brand kit */
+.brief { padding-top: clamp(28px, 4vw, 56px); }
+.brief h2, .brand h2, .bookbox h2 { font-family: var(--display); font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.1; margin-bottom: 18px; }
+.bgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 22px 32px; }
+.bgrid h3 { font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.bgrid p { line-height: 1.5; }
+.brand { padding-top: clamp(28px, 4vw, 56px); }
+.brand .bk { display: grid; gap: 22px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.bk > section { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: clamp(16px, 2.4vw, 28px); min-width: 0; }
+.bk h3 { font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.bk .k-logo { grid-column: span 12; display: grid; place-items: center; min-height: 200px; }
+.bk .k-logo .lg { display: grid; place-items: center; width: 100%; padding: 28px; border-radius: 6px; }
+.bk .k-logo img { max-width: min(100%, 420px); max-height: 180px; }
+.bk .k-type { grid-column: span 7; } .bk .k-pal { grid-column: span 5; } .bk .k-val { grid-column: span 12; }
+.bk .k-type.full, .bk .k-pal.full { grid-column: span 12; }
+.spec b { display: block; font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1; margin-bottom: 8px; }
+.spec small { display: block; color: var(--muted); font-size: .84rem; }
+.spec + .spec { margin-top: 20px; }
+.sw { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+.sw div { min-height: 96px; border-radius: 6px; padding: 10px; display: flex; flex-direction: column; justify-content: flex-end; font-size: .78rem; border: 1px solid rgba(128,128,128,.25); }
+.sw b { font-weight: 700; } .sw span { opacity: .85; font-variant-numeric: tabular-nums; }
+@media (max-width: 800px) { .bk .k-type, .bk .k-pal { grid-column: span 12; } }
+/* libro 3d */
+.bookbox { padding-top: clamp(28px, 4vw, 56px); padding-bottom: clamp(28px, 4vw, 56px); }
+.bookbox .hint { color: var(--muted); max-width: 52ch; margin: -8px 0 18px; }
+.stage { perspective: 1600px; display: grid; place-items: center; height: clamp(420px, 62vh, 620px); border: 1px solid var(--line); border-radius: 10px; background: radial-gradient(ellipse at 50% 40%, var(--surface), var(--hover)); overflow: hidden; touch-action: pan-y; cursor: grab; user-select: none; }
+.stage.drag { cursor: grabbing; }
+.book3d { --w: 240px; --h: 352px; --t: 34px; position: relative; width: var(--w); height: var(--h); transform-style: preserve-3d; transform: rotateX(-8deg) rotateY(-28deg); transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.stage.drag .book3d { transition: none; }
+.book3d > i { position: absolute; display: block; backface-visibility: hidden; }
+.book3d .f { inset: 0; transform: translateZ(calc(var(--t) / 2)); background-size: 100% 100%; box-shadow: inset 4px 0 6px rgba(0,0,0,.25); }
+.book3d .b { inset: 0; transform: rotateY(180deg) translateZ(calc(var(--t) / 2)); background: var(--cc); }
+.book3d .s { width: var(--t); height: var(--h); left: 0; top: 0; transform: rotateY(-90deg) translateZ(calc(var(--t) / 2)) ; background: var(--cc); filter: brightness(.9); }
+.book3d .e { width: var(--t); height: var(--h); right: 0; top: 0; transform: rotateY(90deg) translateZ(calc(var(--t) / 2)); background: repeating-linear-gradient(90deg, #f3efe6 0 2px, #d9d4c8 2px 3px); }
+.book3d .tp { width: var(--w); height: var(--t); left: 0; top: 0; transform: rotateX(90deg) translateZ(calc(var(--t) / 2)); background: repeating-linear-gradient(0deg, #f3efe6 0 2px, #d9d4c8 2px 3px); }
+.book3d .bt { width: var(--w); height: var(--t); left: 0; bottom: 0; transform: rotateX(-90deg) translateZ(calc(var(--t) / 2)); background: repeating-linear-gradient(0deg, #f3efe6 0 2px, #d9d4c8 2px 3px); }
+.bookbox .ctl { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+.bookbox .ctl button { padding: 9px 16px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--fg); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.bookbox .ctl button:hover { background: var(--hover); }
+
 .next { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-bottom: clamp(48px, 8vw, 96px); }
 .next a { flex: 1 1 260px; display: flex; flex-direction: column; gap: 6px; padding: 20px; border: 1px solid var(--line); border-radius: 6px; transition: background .2s, transform .2s; }
 .next a:hover { background: var(--hover); transform: translateY(-3px); }
@@ -258,6 +298,10 @@ var PROJECTS = [
     sub: 'Identità visiva · web design · packaging',
     text: 'Rebranding di Eurochocolate per l’edizione 2026 a Perugia, costruito sul claim «Changing shape, not flavor». Il simbolo è una forma a fava con una C al centro: cambia aspetto e diventa volume nei poster, pattern nei packaging e decorazione nei materiali stampati. Il progetto comprende tre poster in colori diversi, il packaging di tavolette, Euro Cookies, Euro Praline e dell’assortimento d’autore, il programma, la guida alle esperienze, il listino prodotti e il sito web, che puoi provare qui sotto.',
     facts: [],
+    brand: { logo: { src: 'img/brand/eurochocolate-logo.svg', bg: '#FBEEBF' },
+             type: [{ name: 'Montserrat', sample: 'Changing shape, not flavor', weight: 700, note: 'Titoli, claim e testi del sito' }],
+             palette: [['Crema', '#FBEEBF'], ['Rosso', '#B72237'], ['Arancio', '#EA5337'], ['Marrone', '#53110D'], ['Viola', '#681133'], ['Terra', '#B05433']],
+             values: ['Changing shape, not flavor', 'Una forma a fava che si trasforma: volume, pattern, decorazione'] },
     open: { href: 'eurochocolate/', label: 'Apri il sito' },
     embed: { src: 'eurochocolate/', kind: 'site', title: 'Il sito del concept', text: 'Naviga il sito come un visitatore: menu, programma, prodotti, moduli. È un concept di rebranding, non il sito ufficiale di Eurochocolate.' },
     images: [['img/euro-poster.webp', 'Tre poster di Eurochocolate 2026, rosso, arancio e marrone scuro, con la grande C e il claim Changing shape, not flavor'],
@@ -268,6 +312,10 @@ var PROJECTS = [
     sub: 'Identità visiva · exhibition design · creative coding',
     text: 'Brand e applicativo interattivo per la mostra di Pirri. Il logo è costruito a moduli quadrati, come un pixel. Nel programma il visitatore inserisce il proprio nome e carica o disegna il suo percorso. Il percorso diventa un pattern a moduli che compare un passo alla volta, accompagnato da un click sonoro. Il pattern si applica poi a una maglietta e a una cartolina e si salva come immagine. L’area del pattern è proporzionata all’installazione: 266 × 720 pixel. Lo stesso pattern è applicato anche a una tote bag.',
     facts: [['Strumenti', 'Processing, JavaScript']],
+    brief: { software: ['Processing', 'JavaScript'] },
+    brand: { logo: { src: 'passi/logo-passi.png', bg: '#F1ECDF' },
+             type: [{ name: 'Montserrat', sample: 'PASSI', weight: 500, spacing: '.3em', note: 'Titoli e interfaccia dell’applicativo, in maiuscolo spaziato' }],
+             palette: [['Chiaro', '#F1ECDF'], ['Tortora', '#968B7C'], ['Nero', '#111111']] },
     open: { href: 'passi/', label: 'Apri l’applicativo' },
     embed: { src: 'passi/', kind: 'phone', title: 'Prova l’applicativo', text: 'Inserisci il tuo nome, usa il percorso d’esempio o disegnane uno, e guarda comporsi il tuo pattern. Con l’audio attivo senti il click di ogni passo.' },
     images: [['img/passi-logo.webp', 'Logo Passi: moduli quadrati neri e scritta PASSI distanziata'],
@@ -281,12 +329,14 @@ var PROJECTS = [
     facts: [],
     images: [['img/city-identity.jpg', 'Logo BRNDSI, palette in due blu e bianco, concept geometrico e 20 icone per luoghi e servizi della città'],
              ['img/city-materials.jpg', 'Materiali del city branding: mappa dei quartieri, brochure con cubi illustrati, schede dei monumenti e carta intestata']] },
-  { slug: 'vignelli', sec: 'editoria', band: 'editoria', title: 'Massimo Vignelli', cover: 'img/editoria-vignelli.jpg', badge: '',
+  { slug: 'vignelli', sec: 'editoria', band: 'editoria', title: 'Massimo Vignelli', cover: 'img/libri/vignelli-home.jpg', badge: '',
+    book: { cover: 'img/libri/vignelli-cover.jpg', color: '#161616', w: 320, h: 470, t: 44 },
     sub: 'Libro sul design e la tipografia',
     text: 'Libro su Massimo Vignelli e sulla progettazione tipografica. Comprende un carattere, con i suoi glifi e i mockup di cappellino e felpa, e le pagine interne dedicate al designer.',
     facts: [],
     images: [['img/editoria-vignelli.jpg', 'Libro «noname albumxalbumx»: copertina tipografica, mockup di cappellino e felpa, specimen del carattere e pagine su Massimo Vignelli']] },
-  { slug: 'edelmann', sec: 'editoria', band: 'editoria', title: 'Heinz Edelmann', cover: 'img/editoria-edelmann.jpg', badge: '',
+  { slug: 'edelmann', sec: 'editoria', band: 'editoria', title: 'Heinz Edelmann', cover: 'img/libri/edelmann-home.jpg', badge: '',
+    book: { cover: 'img/libri/edelmann-cover.jpg', color: '#1b1b1b', w: 320, h: 459, t: 44 },
     sub: 'Libro sull’illustratore di Yellow Submarine',
     text: 'Libro su Heinz Edelmann, illustratore e graphic designer. La copertina unisce il ritratto alle sue immagini; all’interno ci sono le pagine sulla copertina di Graphis e sul film Yellow Submarine.',
     facts: [],
@@ -431,6 +481,43 @@ function home() {
     '<div class="foot"><span>Cristian Figura · ' + esc(a.place) + '</span><span>Portfolio · ' + new Date().getFullYear() + '</span></div></div></section></main>';
 }
 
+function tagsOf(a) { return a.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join(''); }
+function brief(p) {
+  var b = p.brief || {}, c = [];
+  if (b.software && b.software.length) c.push('<div><h3>Software</h3><div class="tags">' + tagsOf(b.software) + '</div></div>');
+  if (b.soft && b.soft.length) c.push('<div><h3>Soft skills</h3><div class="tags">' + tagsOf(b.soft) + '</div></div>');
+  if (b.metodo && b.metodo.length) c.push('<div><h3>Metodo</h3><p>' + b.metodo.map(esc).join('<br>') + '</p></div>');
+  if (!c.length) return '';
+  return '<section class="brief wrap"><h2>Come l’ho fatto</h2><div class="bgrid">' + c.join('') + '</div></section>';
+}
+function lum(h) { var n = parseInt(h.slice(1), 16), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255; return (0.299 * r + 0.587 * g + 0.114 * b) / 255; }
+function brandKit(p) {
+  var b = p.brand; if (!b) return '';
+  var h = '<section class="brand wrap"><h2>Il brand</h2><div class="bk">';
+  if (b.logo) h += '<section class="k-logo"><h3>Logo</h3><div class="lg" style="background:' + b.logo.bg + '"><img src="' + b.logo.src + '" alt="Logo ' + esc(p.title) + '"></div></section>';
+  var full = !b.palette ? ' full' : '';
+  if (b.type) h += '<section class="k-type' + full + '"><h3>Tipografia</h3>' + b.type.map(function (t) { return '<div class="spec"><b style="font-family:' + esc(t.name) + ',sans-serif;font-weight:' + (t.weight || 500) + (t.spacing ? ';letter-spacing:' + t.spacing : '') + '">' + esc(t.sample) + '</b><small>' + esc(t.name) + (t.note ? ' · ' + esc(t.note) : '') + '</small></div>'; }).join('') + '</section>';
+  if (b.palette) h += '<section class="k-pal' + (b.type ? '' : ' full') + '"><h3>Palette</h3><div class="sw">' + b.palette.map(function (c) { return '<div style="background:' + c[1] + ';color:' + (lum(c[1]) > .55 ? '#161616' : '#fff') + '"><b>' + esc(c[0]) + '</b><span>' + c[1].toUpperCase() + '</span></div>'; }).join('') + '</div></section>';
+  if (b.values) h += '<section class="k-val"><h3>Valori</h3><div class="tags">' + tagsOf(b.values) + '</div></section>';
+  return h + '</div></section>';
+}
+function bookBox(p) {
+  var k = p.book; if (!k) return '';
+  return '<section class="bookbox wrap"><h2>Il libro in 3D</h2><p class="hint">Trascina per girarlo da ogni lato.</p>' +
+    '<div class="stage" id="stage"><div class="book3d" id="book3d" style="--w:' + k.w + 'px;--h:' + k.h + 'px;--t:' + k.t + 'px;--cc:' + k.color + '"><i class="f" style="background-image:url(' + k.cover + ')"></i><i class="b"></i><i class="s"></i><i class="e"></i><i class="tp"></i><i class="bt"></i></div></div>' +
+    '<div class="ctl"><button type="button" data-rot="-28,-8">Fronte</button><button type="button" data-rot="152,-8">Retro</button><button type="button" data-rot="-90,0">Dorso</button><button type="button" data-rot="-28,-70">Dall’alto</button></div></section>';
+}
+function initBook() {
+  var st = document.getElementById('stage'), bk = document.getElementById('book3d'); if (!st) return;
+  var ry = -28, rx = -8, sx = 0, sy = 0, d = false;
+  function ap() { bk.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)'; }
+  st.addEventListener('pointerdown', function (e) { d = true; sx = e.clientX; sy = e.clientY; st.classList.add('drag'); try { st.setPointerCapture(e.pointerId); } catch (x) {} });
+  st.addEventListener('pointermove', function (e) { if (!d) return; ry += (e.clientX - sx) * .5; rx = Math.max(-80, Math.min(80, rx - (e.clientY - sy) * .4)); sx = e.clientX; sy = e.clientY; ap(); });
+  function up() { d = false; st.classList.remove('drag'); }
+  st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
+  document.querySelectorAll('[data-rot]').forEach(function (b) { b.addEventListener('click', function () { var v = b.getAttribute('data-rot').split(','); ry = +v[0]; rx = +v[1]; ap(); }); });
+}
+
 function project(p) {
   var s = sec(p.sec), b = BANDS[p.band];
   var i = PROJECTS.indexOf(p);
@@ -446,7 +533,7 @@ function project(p) {
   }
   return '<header class="bar"><div class="bar-in"><a class="mark" href="#">Cristian Figura <span>/ portfolio</span></a><a class="back" href="#' + s.id + '">← ' + esc(s.nav) + '</a>' + themeBtn() + '</div></header>' +
     '<main><section class="phead" style="--c:' + b.c + ';--ink:' + b.ink + '"><div class="wrap"><div class="cat">' + esc(s.name) + (p.group ? ' · ' + esc(p.group) : '') + '</div><h1>' + esc(p.title) + '</h1><p>' + esc(p.text) + '</p>' + facts + '<div>' + cta + '</div></div></section>' +
-    embed +
+    brandKit(p) + brief(p) + embed + bookBox(p) +
     '<section class="gallery wrap">' + p.images.map(function (im) { return '<button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '"></button>'; }).join('') + '</section>' +
     (p.parts ? '<section class="parts wrap"><h2>' + esc(p.partsTitle || 'Dettagli') + '</h2><div class="pgal">' + p.parts.map(function (im) { return '<figure><button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '" loading="lazy"></button><figcaption>' + esc(im[1]) + '</figcaption></figure>'; }).join('') + '</div></section>' : '') +
     '<nav class="next wrap" aria-label="Altri progetti"><a href="#' + prev.slug + '"><small>← Precedente</small><b>' + esc(prev.title) + '</b></a><a class="r" href="#' + next.slug + '"><small>Successivo →</small><b>' + esc(next.title) + '</b></a></nav></main>';
@@ -468,6 +555,7 @@ function route() {
     app.innerHTML = project(p); view = 'project';
     document.title = p.title + ' · Cristian Figura';
     window.scrollTo({ top: 0, behavior: 'instant' });
+    initBook();
     return;
   }
   var fresh = view !== 'home';
