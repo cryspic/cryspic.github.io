@@ -18,6 +18,7 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); f
 .btns { display: flex; gap: 8px; }
 button { font: 700 12px/1 "Helvetica Neue", Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--fg); background: var(--btn); border: 1px solid var(--line); padding: 10px 14px; border-radius: 99px; cursor: pointer; transition: transform .15s ease; }
 button:hover { transform: translateY(-2px); }
+button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
 button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 #msg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; font-size: 14px; color: var(--muted); pointer-events: none; }
 #bar { position: absolute; left: 0; top: 0; height: 3px; width: 0; background: var(--fg); transition: width .2s; }
@@ -30,7 +31,7 @@ button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 <div id="msg">Carico il modello 3D…</div>
 <div class="ui">
   <span class="hint">Trascina per ruotare · scorri o pizzica per ingrandire · due dita per spostare</span>
-  <span class="btns"><button type="button" id="spin">Rotazione</button><button type="button" id="reset">Inquadra tutto</button></span>
+  <span class="btns" id="views" role="group" aria-label="Scegli cosa vedere"></span><span class="btns"><button type="button" id="spin">Rotazione</button></span>
 </div>
 <script type="module">
 import * as THREE from 'three';
@@ -60,10 +61,22 @@ try {
   ctl.enableDamping = true; ctl.dampingFactor = 0.08; ctl.autoRotateSpeed = 1.2;
   const key = new THREE.DirectionalLight(0xffffff, 1.2); key.position.set(1, 2, 1.5); scene.add(key);
 
-  let home = null;
-  function frame() {
-    if (!home) return;
-    cam.position.copy(home.pos); ctl.target.copy(home.target); ctl.update();
+  const VIEWS = [['montato', 'Montato'], ['singoli', 'Singoli'], ['esploso', 'Esploso'], ['altri', 'Altri pezzi']];
+  const groups = {}; let current = null, home = null;
+  function frame() { if (!home) return; cam.position.copy(home.pos); ctl.target.copy(home.target); ctl.update(); }
+  function show(name) {
+    current = name;
+    for (const k in groups) groups[k].list.forEach(o => { o.visible = (k === name); });
+    const box = new THREE.Box3();
+    groups[name].list.forEach(o => box.expandByObject(o));
+    const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+    const r = Math.max(size.x, size.y, size.z) * 0.62 || 0.05;
+    const dist = r / Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
+    home = { target: c.clone(), pos: c.clone().add(new THREE.Vector3(0.55, 0.45, 0.8).normalize().multiplyScalar(dist)) };
+    cam.near = dist * 0.01; cam.far = dist * 20; cam.updateProjectionMatrix();
+    ctl.minDistance = dist * 0.05; ctl.maxDistance = dist * 4;
+    frame();
+    document.querySelectorAll('#views button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === name));
   }
   function resize() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -71,20 +84,20 @@ try {
   }
   addEventListener('resize', resize); resize();
 
+  const views = document.getElementById('views');
   new GLTFLoader().load('utensile.glb', gltf => {
     scene.add(gltf.scene);
-    const box = new THREE.Box3().setFromObject(gltf.scene);
-    const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
-    const r = Math.max(size.x, size.y, size.z) * 0.62;
-    const dist = r / Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
-    home = { target: c.clone(), pos: c.clone().add(new THREE.Vector3(0.55, 0.45, 0.8).normalize().multiplyScalar(dist)) };
-    cam.far = dist * 10; cam.updateProjectionMatrix();
-    ctl.minDistance = dist * 0.01; ctl.maxDistance = dist * 3;
-    frame(); msg.remove(); bar.style.width = '0';
+    gltf.scene.traverse(o => { const g = o.userData && o.userData.gruppo; if (g) (groups[g] = groups[g] || { list: [] }).list.push(o); });
+    VIEWS.forEach(([id, label]) => {
+      if (!groups[id]) return;
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.dataset.v = id;
+      b.onclick = () => show(id); views.appendChild(b);
+    });
+    show(groups.montato ? 'montato' : Object.keys(groups)[0]);
+    msg.remove(); bar.style.width = '0';
   }, e => { if (e.total) bar.style.width = (100 * e.loaded / e.total) + '%'; },
   err => { console.error(err); msg.textContent = 'Non riesco a caricare il modello 3D. Riprova più tardi.'; });
 
-  document.getElementById('reset').onclick = frame;
   const spin = document.getElementById('spin');
   spin.onclick = () => { ctl.autoRotate = !ctl.autoRotate; spin.style.opacity = ctl.autoRotate ? 1 : .6; };
   spin.style.opacity = .6;
