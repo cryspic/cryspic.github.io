@@ -182,6 +182,14 @@ a.card:hover .shot img { transform: scale(1.05); }
 .gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(16px, 2.5vw, 32px); padding: clamp(28px, 4vw, 56px) 0; }
 .gallery button { display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); cursor: zoom-in; }
 .gallery img { display: block; width: 100%; height: auto; }
+.parts { padding-bottom: clamp(28px, 4vw, 56px); }
+.parts h2 { font-family: var(--display); font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: 18px; }
+.pgal { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 14px; }
+.pgal figure { margin: 0; }
+.pgal button { display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #000; cursor: zoom-in; transition: transform .3s ease, box-shadow .3s ease; }
+.pgal button:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.pgal img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.pgal figcaption { margin-top: 8px; font-size: .84rem; color: var(--muted); }
 .next { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-bottom: clamp(48px, 8vw, 96px); }
 .next a { flex: 1 1 260px; display: flex; flex-direction: column; gap: 6px; padding: 20px; border: 1px solid var(--line); border-radius: 6px; transition: background .2s, transform .2s; }
 .next a:hover { background: var(--hover); transform: translateY(-3px); }
@@ -287,12 +295,20 @@ var PROJECTS = [
     sub: 'Stanza costruita su elementi modulari',
     text: 'Progettazione di uno studio basato su elementi modulari: tubi e giunti, mensole, pannelli, sedute, lampade e un cavalletto. Gli elementi sono modellati in Rhino e combinati nella stanza.',
     facts: [['Strumenti', 'Rhino']],
-    images: [['img/3d-studio.jpg', 'Render di uno studio con parete di mattoni, struttura di tubi, mensole, casse audio, scrivania e altalena sospesa, con i moduli singoli a sinistra']] },
+    images: [['img/3d/studio-stanza.webp', 'Render dello studio: parete di mattoni, struttura di tubi, mensole, casse audio, lavagna e pavimento in legno'],
+             ['img/3d-studio.jpg', 'Tavola con lo studio, la struttura di tubi, le mensole, le casse audio, la scrivania e l’altalena sospesa, con i moduli singoli a sinistra']],
+    partsTitle: 'Gli elementi',
+    parts: [['img/3d/pz-tubolare.webp', 'Tubo con scanalatura'], ['img/3d/pz-concavo.webp', 'Giunto concavo'], ['img/3d/pz-convesso.webp', 'Giunto convesso'], ['img/3d/pz-incrocio.webp', 'Giunto a croce'],
+            ['img/3d/pezzo-base.webp', 'Piede con base'], ['img/3d/pannello-grande.webp', 'Piano grande'], ['img/3d/pannello-medio.webp', 'Piano medio'], ['img/3d/piano-piccolo.webp', 'Piano piccolo'],
+            ['img/3d/pannello-fonoassorbente.webp', 'Pannelli fonoassorbenti'], ['img/3d/sospeso-piani.webp', 'Mensole sospese a più piani'], ['img/3d/sospeso-grande.webp', 'Piani sospesi con catene'], ['img/3d/esploso-sospeso.webp', 'Vista esplosa di un piano sospeso'],
+            ['img/3d/fissaggio-soffitto.webp', 'Fissaggio da soffitto'], ['img/3d/lampada.webp', 'Lampade'], ['img/3d/panca.webp', 'Panca con cuscini'], ['img/3d/portatele.webp', 'Supporto per schermo e lavagna']] },
   { slug: 'utensile', sec: '3d', band: '3d', title: 'Utensile da cucina', cover: 'img/3d-utensile.jpg', badge: '',
     sub: 'Rullo con lame, due versioni',
     text: 'Progettazione di un utensile da cucina a rullo con lame circolari e impugnatura, in due versioni, accompagnata da schizzi che mostrano come si usa.',
     facts: [['Strumenti', 'Rhino']],
-    images: [['img/3d-utensile.jpg', 'Due versioni di un utensile da cucina a rullo con lame circolari e schizzi d’uso']] },
+    images: [['img/3d/utensile-2.webp', 'Rendering delle due versioni dell’utensile: a sinistra con un solo rullo, a destra con cinque dischi dentati e impugnatura nera'],
+             ['img/3d/utensile-1.webp', 'Versione con cinque dischi dentati vista in assonometria'],
+             ['img/3d-utensile.jpg', 'Due versioni di un utensile da cucina a rullo con lame circolari e schizzi d’uso']] },
   { slug: 'peeps', sec: 'digital', band: 'digital', title: 'Peeps', cover: 'img/mockup-peeps.jpg', badge: '',
     sub: 'App per creativi, dall’idea ai mockup',
     text: 'Ideazione di un’app per creativi e realizzazione dei mockup. Gli annunci mostrano avanzamento e pagamenti; il profilo raccoglie skills, attrezzatura e gusti personali.',
@@ -430,6 +446,7 @@ function project(p) {
     '<main><section class="phead" style="--c:' + b.c + ';--ink:' + b.ink + '"><div class="wrap"><div class="cat">' + esc(s.name) + (p.group ? ' · ' + esc(p.group) : '') + '</div><h1>' + esc(p.title) + '</h1><p>' + esc(p.text) + '</p>' + facts + '<div>' + cta + '</div></div></section>' +
     embed +
     '<section class="gallery wrap">' + p.images.map(function (im) { return '<button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '"></button>'; }).join('') + '</section>' +
+    (p.parts ? '<section class="parts wrap"><h2>' + esc(p.partsTitle || 'Dettagli') + '</h2><div class="pgal">' + p.parts.map(function (im) { return '<figure><button type="button" data-zoom="' + im[0] + '" data-alt="' + esc(im[1]) + '"><img src="' + im[0] + '" alt="' + esc(im[1]) + '" loading="lazy"></button><figcaption>' + esc(im[1]) + '</figcaption></figure>'; }).join('') + '</div></section>' : '') +
     '<nav class="next wrap" aria-label="Altri progetti"><a href="#' + prev.slug + '"><small>← Precedente</small><b>' + esc(prev.title) + '</b></a><a class="r" href="#' + next.slug + '"><small>Successivo →</small><b>' + esc(next.title) + '</b></a></nav></main>';
 }
 
