@@ -67,7 +67,8 @@ try {
   function show(name) {
     current = name;
     for (const k in groups) groups[k].list.forEach(o => { o.visible = (k === name); });
-    const cj = groups[name].list[0].userData.caja;
+    const cj = groups[name].list.map(o => o.userData.caja).find(Boolean);
+    if (!cj) { console.error('misure mancanti'); return; }
     const box = new THREE.Box3(new THREE.Vector3(...cj[0]), new THREE.Vector3(...cj[1]));
     const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
     const r = Math.max(size.x, size.y, size.z) * 0.62 || 0.05;
@@ -85,7 +86,7 @@ try {
   addEventListener('resize', resize); resize();
 
   const views = document.getElementById('views');
-  new GLTFLoader().load('utensile.glb', gltf => {
+  new GLTFLoader().load('utensile.glb?v=4', gltf => {
     scene.add(gltf.scene);
     gltf.scene.traverse(o => { const g = o.userData && o.userData.gruppo; if (g) (groups[g] = groups[g] || { list: [] }).list.push(o); });
     VIEWS.forEach(([id, label]) => {
