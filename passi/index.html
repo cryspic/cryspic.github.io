@@ -569,16 +569,17 @@ canvas { display: block; width: 426px; height: 749px; border-radius: 6px; user-s
     ctx.strokeRect(xArea + 0.5, yArea + 0.5, SCR_W - 1, SCR_H - 1);
     ctx.restore();
     if (!drawPts.length) {
-      text(ctx, 'Trascina qui dentro\nper tracciare i tuoi passi:\nil percorso diventa ortogonale', W / 2, yArea + SCR_H / 2, { size: 12.5, color: css(PATT[palette], 0.8) });
+      text(ctx, 'Trascina qui dentro\nper tracciare i tuoi passi:\nal rilascio il percorso\ndiventa ortogonale', W / 2, yArea + SCR_H / 2, { size: 12.5, color: css(PATT[palette], 0.8) });
     } else {
-      var pv = ortoPx(puntiDisegnati());
-      ctx.strokeStyle = css(PATT[palette], 0.28); ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      var pv = drawing ? [] : ortoPx(puntiDisegnati());
+      ctx.strokeStyle = css(PATT[palette], drawing ? 0.95 : 0.28); ctx.lineWidth = drawing ? 2.5 : 1.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
       ctx.beginPath();
       for (var i = 0; i < drawPts.length; i++) {
         var sx = xArea + drawPts[i].x * SCR_W / AREA_W, sy = yArea + drawPts[i].y * SCR_H / AREA_H;
         if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
       }
       ctx.stroke();
+      if (drawing) return;
       ctx.strokeStyle = css(PATT[palette], 0.95); ctx.lineWidth = 2.5;
       ctx.beginPath();
       for (var k = 0; k < pv.length; k++) {
